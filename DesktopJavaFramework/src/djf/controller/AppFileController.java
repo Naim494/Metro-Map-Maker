@@ -37,6 +37,7 @@ import java.nio.file.StandardOpenOption;
  * are provided by this framework.
  *
  * @author Richard McKenna
+ * @author Naim Youssif Traore
  * @version 1.0
  */
 public class AppFileController {
