@@ -35,6 +35,7 @@ public class AppTextInputDialogSingleton extends Stage{
     Button done;
     Button cancel;
     String text = "";
+    Boolean isCancelled = false;
     
     public static final String DONE = "Done";
     public static final String CANCEL = "Cancel";
@@ -54,10 +55,10 @@ public class AppTextInputDialogSingleton extends Stage{
         initOwner(primaryStage);
         
         //
-        setTitle("Enter Text");
+        //setTitle("Enter Text");
         
         // LABEL TO DISPLAY THE CUSTOM MESSAGE
-        messageLabel = new Label("Please enter text here:");        
+        messageLabel = new Label();        
 
         // ENGLISH, ITALIAN BUTTONS
         done = new Button(DONE);
@@ -75,6 +76,7 @@ public class AppTextInputDialogSingleton extends Stage{
            // Button sourceButton = (Button)ae.getSource();
            
            AppTextInputDialogSingleton.this.close();
+           isCancelled = true;
         };
           
         // AND THEN REGISTER THEM TO RESPOND TO INTERACTIONS
@@ -105,5 +107,22 @@ public class AppTextInputDialogSingleton extends Stage{
     
     public String getText() {
         return text;
+    }
+    
+    public boolean isCanceled() {
+       return isCancelled; 
+    }
+    
+    public void show(String title, String message) {
+	// SET THE DIALOG TITLE BAR TITLE
+	setTitle(title);
+	
+	// SET THE MESSAGE TO DISPLAY TO THE USER
+        messageLabel.setText(message);
+	
+	// AND OPEN UP THIS DIALOG, MAKING SURE THE APPLICATION
+	// WAITS FOR IT TO BE RESOLVED BEFORE LETTING THE USER
+	// DO MORE WORK.
+        showAndWait();
     }
 }

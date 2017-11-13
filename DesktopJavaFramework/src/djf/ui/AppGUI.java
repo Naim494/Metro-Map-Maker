@@ -18,9 +18,13 @@ import djf.AppTemplate;
 import static djf.settings.AppPropertyType.*;
 import static djf.settings.AppStartupConstants.FILE_PROTOCOL;
 import static djf.settings.AppStartupConstants.PATH_IMAGES;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 //import jtps.jTPS;
-
 
 /**
  * This class provides the basic user interface for this application, including
@@ -32,7 +36,7 @@ import java.net.URL;
  * @version 1.0
  */
 public class AppGUI {
-    
+
     // THIS HANDLES INTERACTIONS WITH FILE-RELATED CONTROLS
     protected AppFileController fileController;
 
@@ -49,34 +53,34 @@ public class AppGUI {
 
     // THIS IS THE TOP PANE WHERE WE CAN PUT TOOLBAR
     protected BorderPane topToolbarPane;
-    
+
     protected BorderPane leftSide;
     protected BorderPane rightSide;
 
     // THIS IS THE FILE TOOLBAR AND ITS CONTROLS
     protected FlowPane fileToolbar;
-    
+
     // FILE TOOLBAR BUTTONS
     protected Button newButton;
     protected Button loadButton;
     protected Button saveButton;
     protected Button exitButton;
-    
+
     // THIS IS THE EDIT TOOLBAR AND ITS CONTROLS
     protected FlowPane editToolbar;
-    
+
     // EDIT TOOLBAR BUTTONS
     protected Button cutButton;
     protected Button copyButton;
     protected Button pasteButton;
-    
+
     // THIS IS THE UNDO/REDO TOOLBAR AND ITS CONTROLS
     protected FlowPane undoRedoToolbar;
 
     // UNDO/REDO TOOLBAR BUTTONS
     protected Button undoButton;
     protected Button redoButton;
-    
+
     //THIS IS THE LANG TOOLBAR
     protected FlowPane settingsToolbar;
 
@@ -106,7 +110,7 @@ public class AppGUI {
         // SAVE THESE FOR LATER
         primaryStage = initPrimaryStage;
         appTitle = initAppTitle;
-       
+
         // INIT THE TOOLBAR
         initTopToolbar(app);
 
@@ -209,14 +213,14 @@ public class AppGUI {
     private void initTopToolbar(AppTemplate app) {
         fileToolbar = new FlowPane();
         fileToolbar.setMaxWidth(350);
-        
+
         settingsToolbar = new FlowPane();
         settingsToolbar.setAlignment(Pos.TOP_RIGHT);
         settingsToolbar.setMaxWidth(355);
-        
+
         editToolbar = new FlowPane();
         editToolbar.setMaxWidth(355);
-        
+
         undoRedoToolbar = new FlowPane();
         undoRedoToolbar.setMaxWidth(350);
 
@@ -229,22 +233,68 @@ public class AppGUI {
 
         languageButton = initChildButton(settingsToolbar, LANGUAGE_ICON.toString(), LANGUAGE_TOOLTIP.toString(), false);
         aboutButton = initChildButton(settingsToolbar, ABOUT_ICON.toString(), ABOUT_TOOLTIP.toString(), false);
-        
-        cutButton = initChildButton(editToolbar,       CUT_ICON.toString(),        CUT_TOOLTIP.toString(),     true);
-        copyButton = initChildButton(editToolbar,       COPY_ICON.toString(),        COPY_TOOLTIP.toString(),     true);
-        pasteButton = initChildButton(editToolbar,       PASTE_ICON.toString(),        PASTE_TOOLTIP.toString(),     true);
-        
-        undoButton = initChildButton(undoRedoToolbar,   UNDO_ICON.toString(),     UNDO_TOOLTIP.toString(),   true);
-        redoButton = initChildButton(undoRedoToolbar,   REDO_ICON.toString(),     REDO_TOOLTIP.toString(),   true);
+
+        cutButton = initChildButton(editToolbar, CUT_ICON.toString(), CUT_TOOLTIP.toString(), true);
+        copyButton = initChildButton(editToolbar, COPY_ICON.toString(), COPY_TOOLTIP.toString(), true);
+        pasteButton = initChildButton(editToolbar, PASTE_ICON.toString(), PASTE_TOOLTIP.toString(), true);
+
+        undoButton = initChildButton(undoRedoToolbar, UNDO_ICON.toString(), UNDO_TOOLTIP.toString(), true);
+        redoButton = initChildButton(undoRedoToolbar, REDO_ICON.toString(), REDO_TOOLTIP.toString(), true);
 
         // AND NOW SETUP THEIR EVENT HANDLERS
         fileController = new AppFileController(app);
+
         newButton.setOnAction(e -> {
-            fileController.handleNewRequest();
+                PropertiesManager props = PropertiesManager.getPropertiesManager();
+            AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+            AppTextInputDialogSingleton textDialog = AppTextInputDialogSingleton.getSingleton();
+            textDialog.isCancelled = false;
+
+            String name = "";
+            boolean done = false;
+
+            try {
+                done = false;
+
+                textDialog.show("Name", "Enter a name for the map:");
+                File file;
+
+                while (!(done) && !(textDialog.isCanceled())) {
+
+                    name = textDialog.getText();
+
+                    file = new File("export/" + name + "/" + name);
+
+                    if (!(file.exists())) {
+
+                        file.getParentFile().mkdir();
+                        file.createNewFile();
+
+                        done = true;
+                        
+                        File recentList = new File("recentList.txt");
+                        if (!(recentList.exists())) {
+                            recentList.createNewFile();
+                        }
+                        Files.write(Paths.get("recentList.txt"), (name + "\n").getBytes(), StandardOpenOption.APPEND);
+
+                    } else {
+                        textDialog.show("Name", "Name already in use, please enter a new name:");
+
+                    }
+                }
+            } catch (IOException ioe) {
+                // SOMETHING WENT WRONG, PROVIDE FEEDBACK
+                dialog.show(props.getProperty(NEW_ERROR_TITLE), props.getProperty(NEW_ERROR_MESSAGE));
+            }
+
+            if (done) {
+                fileController.handleNewRequest();
+            }
         });
         loadButton.setOnAction(e -> {
             fileController.handleLoadRequest();
-            
+
         });
         saveButton.setOnAction(e -> {
             fileController.handleSaveRequest();
@@ -252,7 +302,7 @@ public class AppGUI {
         exitButton.setOnAction(e -> {
             fileController.handleExitRequest();
         });
-        
+
         aboutButton.setOnAction(e -> {
             AppTemplate.aboutDialog.showAndWait();
         });
@@ -262,20 +312,22 @@ public class AppGUI {
         topToolbarPane = new BorderPane();
         leftSide = new BorderPane();
         rightSide = new BorderPane();
-        
+
         leftSide.setLeft(fileToolbar);
         leftSide.setRight(editToolbar);
-        
+
         rightSide.setLeft(undoRedoToolbar);
         rightSide.setRight(settingsToolbar);
-        
+
         topToolbarPane.setLeft(leftSide);
         topToolbarPane.setRight(rightSide);
-        
-        /**topToolbarPane.setLeft(fileToolbar);
-        topToolbarPane.setCenter(editToolbar);
-        topToolbarPane.setCenter(undoRedoToolbar);
-        topToolbarPane.setRight(settingsToolbar);**/
+
+        /**
+         * topToolbarPane.setLeft(fileToolbar);
+         * topToolbarPane.setCenter(editToolbar);
+         * topToolbarPane.setCenter(undoRedoToolbar);
+         * topToolbarPane.setRight(settingsToolbar);*
+         */
     }
 
     // INITIALIZE THE WINDOW (i.e. STAGE) PUTTING ALL THE CONTROLS
@@ -348,10 +400,9 @@ public class AppGUI {
         // AND RETURN THE COMPLETED BUTTON
         return button;
     }
-    
+
     public Button initChildButton(Pane toolbar, String tooltip, boolean disabled) {
         PropertiesManager props = PropertiesManager.getPropertiesManager();
-
 
         // NOW MAKE THE BUTTON
         Button button = new Button();
@@ -435,27 +486,27 @@ public class AppGUI {
         redoButton.setTooltip(new Tooltip(props.getProperty(REDO_TOOLTIP.toString())));
 
     }
-    
+
     public Button getLanguageButton() {
         return languageButton;
     }
-    
-     public Button getCutButton() {
+
+    public Button getCutButton() {
         return cutButton;
     }
-    
+
     public Button getCopyButton() {
         return copyButton;
     }
-    
+
     public Button getPasteButton() {
         return pasteButton;
     }
-    
+
     public Button getUndoButton() {
         return undoButton;
     }
-    
+
     public Button getRedoButton() {
         return redoButton;
     }

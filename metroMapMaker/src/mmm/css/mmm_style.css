@@ -6,6 +6,11 @@ and open the template in the editor.
 /* 
     Created on : Nov 6, 2017, 3:09:40 PM
     Author     : naimyoussiftraore
+//#aaaaff
+#7777dd
+
+ #ddddff
+#7777dd
 */
 
 .color-picker {
@@ -14,13 +19,14 @@ and open the template in the editor.
 
 .edit_toolbar_row {
     -fx-padding: 0px;
-    -fx-spacing: 10;
-    -fx-background-color: #ddddff;
+    -fx-spacing: 20;
+    -fx-background-color: #ACDAC2;
     -fx-background-radius: 5.0;
     -fx-padding: 15;
     -fx-spacing: 10;
     -fx-border-width: 2px;
-    -fx-border-color: #7777dd;
+    -fx-border-color: #4BDA93;
+   
 }
 
 .color_chooser_pane {
@@ -34,10 +40,11 @@ and open the template in the editor.
 }
 
 .bordered_pane {
-    -fx-background-color: #aaaaff;
+    -fx-background-color:#4BDA93;    
     -fx-background-radius: 5.0;
     -fx-padding: 15;
     -fx-spacing: 10;
     -fx-border-width: 2px;
-    -fx-border-color: #7777dd;
+    -fx-border-color: #4BDA93;
 }
+

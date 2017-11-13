@@ -219,8 +219,11 @@ public class mmmWorkspace extends AppWorkspaceComponent {
         //ROW 1
         row1Box = new VBox();
         h1 = new HBox();
+        h1.setSpacing(10);
         h2 = new HBox();
+        h2.setSpacing(10);
         h3 = new HBox();
+        h3.setSpacing(10);
 
         metroLinesLabel = new Label(props.getProperty(METRO_LINES_LABEL.toString()));
         changeLineColor = new ColorPicker(Color.valueOf("#EEEE00"));
@@ -251,8 +254,11 @@ public class mmmWorkspace extends AppWorkspaceComponent {
         //ROW 2
         row2Box = new VBox();
         h11 = new HBox();
+        h11.setSpacing(10);
         h22 = new HBox();
+        h22.setSpacing(10);
         h33 = new HBox();
+        h33.setSpacing(10);
 
         metroStationsLabel = new Label(props.getProperty(METRO_STATIONS_LABEL.toString()));
         changeStationFillColor = new ColorPicker(Color.valueOf("#D3D3D3"));
@@ -283,7 +289,9 @@ public class mmmWorkspace extends AppWorkspaceComponent {
         //ROW 3
         row3Box = new HBox();
         v1 = new VBox();
+        v1.setSpacing(10);
         v2 = new VBox();
+        v2.setSpacing(10);
 
         startStation = new ComboBox<>();
         startStation.setTooltip(new Tooltip(props.getProperty(START_STATION_TOOLTIP.toString())));
@@ -304,7 +312,9 @@ public class mmmWorkspace extends AppWorkspaceComponent {
         //ROW 4
         row4Box = new VBox();
         h4 = new HBox();
+        h4.setSpacing(10);
         h44 = new HBox();
+        h44.setSpacing(10);
 
         decorLabel = new Label(props.getProperty(DECOR_LABEL.toString()));
         backGroundColorPicker = new ColorPicker(Color.valueOf("#ADD8E6"));
@@ -326,7 +336,9 @@ public class mmmWorkspace extends AppWorkspaceComponent {
           //ROW 5
         row5Box = new VBox();
         h5 = new HBox();
+        h5.setSpacing(10);
         h55 = new HBox();
+        h55.setSpacing(10);
         
         fontLabel = new Label(props.getProperty(FONT_LABEL.toString()));
         textColorPicker = new ColorPicker(Color.valueOf("#000000"));
@@ -360,7 +372,9 @@ public class mmmWorkspace extends AppWorkspaceComponent {
         //ROW 6
         row6Box = new VBox();
         h6 = new HBox();
+        h6.setSpacing(10);
         h66 = new HBox();
+        h66.setSpacing(10);
         
         navigationLabel = new Label(props.getProperty(NAVIGATION_LABEL.toString()));
         showGrid = new CheckBox("Show Grid");

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    This XML file allows us to easily customize the look and language used
+    in our program's user interface. Note that this properties file is only
+    for the standard controls for an app from the SimpleAppFramework, so
+    it would not include things initialized for the workspace, which is
+    customizable.
+-->
+<properties>
+    <property_list>
+        <property name="APP_TITLE"	    value="goLogoLo"></property>
+	<property name="APP_LOGO"	    value="Logo.png"></property>
+	<property name="APP_PATH_CSS"	    value="css/"></property>
+	<property name="APP_CSS"	    value="gol_style.css"></property>
+
+        <!-- PREFERRED GEOMETRY -->
+        <property name="PREF_WIDTH"         value="800"></property>
+        <property name="PREF_HEIGHT"        value="600"></property>
+        <property name="START_MAXIMIZED"    value="true"></property>
+
+        <!-- PROGRAM ICON FILES -->
+        <property name="NEW_ICON"	    value="New.png"></property>
+        <property name="LOAD_ICON"	    value="Load.png"></property>
+        <property name="SAVE_ICON"	    value="Save.png"></property>
+        <property name="EXIT_ICON"          value="Exit.png"></property>
+        <property name="LANGUAGE_ICON"    value="language.png"></property>
+        <property name="ABOUT_ICON"   value="about.png"></property>
+        <property name="CUT_ICON"   value="Cut.png"></property>
+        <property name="COPY_ICON"  value="Copy.png"></property>
+        <property name="PASTE_ICON"  value="Paste.png"></property>
+        <property name="UNDO_ICON"   value="undoIcon.png"></property>
+        <property name="REDO_ICON"   value="redoIcon.png"></property>
+
+        <!-- TOOLTIPS FOR BUTTONS -->
+        <property name="NEW_TOOLTIP"		value="Crea un nuovo logo"></property>
+        <property name="LOAD_TOOLTIP"		value="Carica un logo esistente"></property>
+        <property name="SAVE_TOOLTIP"		value="Salva questo Logo"></property>
+        <property name="EXIT_TOOLTIP"		value="Uscire dall'applicazione"></property>
+        <property name="LANGUAGE_TOOLTIP" value="Cambia lingua"></property>
+        <property name="ABOUT_TOOLTIP"   value="  Di"></property>
+        <property name="CUT_TOOLTIP"   value="Tagliare"></property>
+        <property name="COPY_TOOLTIP"  value="Copia"></property>
+        <property name="PASTE_TOOLTIP"  value="Incolla"></property>
+        <property name="UNDO_TOOLTIP" value="Disfare"></property>
+        <property name="REDO_TOOLTIP"  value="Rifare"></property>
+
+        <!-- ERROR MESSAGES -->
+        <property name="CLOSE_BUTTON_TEXT"              value="Vicino"></property>
+
+        <property name="NEW_ERROR_MESSAGE"              value="Si è verificato un errore durante la creazione di un nuovo lavoro."></property>
+        <property name="NEW_ERROR_TITLE"		value="Nuovo errore di lavoro"></property>
+        <property name="LOAD_ERROR_MESSAGE"             value="Si è verificato un errore durante il caricamento."></property>
+        <property name="LOAD_ERROR_TITLE"		value="Carica errore di lavoro"></property>
+        <property name="SAVE_ERROR_MESSAGE"             value="Si è verificato un errore nel salvataggio del lavoro."></property>
+        <property name="SAVE_ERROR_TITLE"		value="Salva lavoro Errore"></property>
+        <property name="PROPERTIES_LOAD_ERROR_MESSAGE"	value="Si è verificato un errore durante il caricamento di un file di proprietà."></property>
+        <property name="PROPERTIES_LOAD_ERROR_TITLE"	value="Errore di caricamento dei file di proprietà"></property>
+
+        <!-- VERIFICATION MESSAGES -->
+
+        <property name="NEW_COMPLETED_MESSAGE"		value="New Work Ready for Editing"></property>
+        <property name="NEW_COMPLETED_TITLE"		value="New Work Created"></property>
+        <property name="LOAD_COMPLETED_MESSAGE"		value="File Loading Completed and ready for editing"></property>
+        <property name="LOAD_COMPLETED_TITLE"		value="Loading Completed"></property>
+        <property name="SAVE_COMPLETED_MESSAGE"		value="File Saving Completed"></property>
+        <property name="SAVE_COMPLETED_TITLE"		value="Saving Completed"></property>
+        <property name="SAVE_UNSAVED_WORK_MESSAGE"	value="Would you like to save your unsaved work first?"></property>
+        <property name="SAVE_UNSAVED_WORK_TITLE"	value="Save unsaved work?"></property>
+
+        <property name="NEW_CREATED_MESSAGE"		value="New Work Created but not yet Saved"></property>
+        <property name="WORK_LOADED_MESSAGE"		value="The Work has been Loaded"></property>
+        <property name="WORK_SAVED_MESSAGE"		value="The Work has been Saved"></property>
+        <property name="SAVE_UNSAVED_WORK_MESSAGE"	value="Do you want to save your unsaved work first?"></property>
+	<property name="SAVE_WORK_TITLE"		value="Save your work"></property>
+	<property name="LOAD_WORK_TITLE"		value="Select work file to load"></property>
+	<property name="WORK_FILE_EXT"			value="pm"></property>
+	<property name="WORK_FILE_EXT_DESC"		value="goLogoLo Files"></property>
+
+        <!-- PROGRAM ICON FILES -->
+	<property name="SELECTION_TOOL_ICON"	value="SelectionTool.png"></property>
+	<property name="REMOVE_ICON"		value="Remove.png"></property>
+        <property name="RECTANGLE_ICON"		value="Rect.png"></property>
+	<property name="ELLIPSE_ICON"		value="Ellipse.png"></property>
+	<property name="MOVE_TO_FRONT_ICON"	value="MoveToFront.png"></property>
+	<property name="MOVE_TO_BACK_ICON"	value="MoveToBack.png"></property>
+	<property name="SNAPSHOT_ICON"		value="Snapshot.png"></property>
+  <property name="ADD_IMAGE_ICON"   value="addImage.png"></property>
+  <property name="ADD_TEXT_ICON"    value="addText.png"></property>
+  <property name="BOLD_ICON"    value="boldIcon.png"></property>
+  <property name="ITALIC_ICON"  value="italicIcon.png"></property>
+
+        <!-- TOOLTIPS FOR BUTTONS -->
+	<property name="SELECTION_TOOL_TOOLTIP"	    value="Utilizzare lo strumento Selezione di forma"></property>
+        <property name="REMOVE_ELEMENT_TOOLTIP"	    value="Rimuovi elemento"></property>
+	<property name="RECTANGLE_TOOLTIP"	    value="Disegna il rettangolo"></property>
+	<property name="ELLIPSE_TOOLTIP"	    value="Disegna Ellipse"></property>
+	<property name="MOVE_TO_BACK_TOOLTIP"	    value="Spostare la forma verso il retro"></property>
+	<property name="MOVE_TO_FRONT_TOOLTIP"	    value="Spostare la forma in avanti"></property>
+	<property name="BACKGROUND_TOOLTIP"	    value="Seleziona Colore sfondo"></property>
+	<property name="FILL_TOOLTIP"		    value="Seleziona Colore riempimento"></property>
+	<property name="OUTLINE_TOOLTIP"	    value="Selezionare Colore contorno"></property>
+	<property name="SNAPSHOT_TOOLTIP"	    value="Prendere Snapshot"></property>
+  <property name="ADD_IMAGE_TOOLTIP"    value="Aggiungi immagine"></property>
+  <property name="ADD_TEXT_TOOLTIP"     value="Aggiungi testo"></property>
+  <property name="FONT_FAMILY_TOOLTIP"   value="Seleziona la famiglia di caratteri"></property>
+  <property name="FONT_SIZE_TOOLTIP"  value="Seleziona dimensione carattere"></property>
+  <property name="BOLD_TOOLTIP"  value="Testo grassetto"></property>
+  <property name="ITALIC_TOOLTIP"   value="Corsivo testo"></property>
+
+
+        <!-- ROW LABELS -->
+<property name="BACKGROUND_COLOR_LABEL" value="Colore di sfondo"></property>
+<property name="FILL_COLOR_LABEL" value="Colore di riempimento"></property>
+<property name="OUTLINE_COLOR_LABEL" value="Colore della struttura"></property>
+<property name="OUTLINE_THICKNESS_LABEL" value="Colore spessore della struttura"></property>
+
+
+	<!-- MESSAGES -->
+	<property name="REMOVE_ELEMENT_MESSAGE"	    value="Sei sicuro che si desidera rimuovere quell'elemento?"></property>
+
+	<!-- ERROR MESSAGES AND TITLES FOR THEIR DIALOGS -->
+	<property name="ATTRIBUTE_UPDATE_ERROR_MESSAGE"	    value="WARNING: An error occured updating the element's attribute."></property>
+	<property name="ATTRIBUTE_UPDATE_ERROR_TITLE"	    value="Attribute Update Error"></property>
+	<property name="UPDATE_ERROR_MESSAGE"		    value="An error occured updating the UI"></property>
+	<property name="UPDATE_ERROR_TITLE"		    value="UI Update Error"></property>
+
+    </property_list>
+    <property_options_list>
+    </property_options_list>
+</properties>
