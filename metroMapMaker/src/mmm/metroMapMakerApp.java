@@ -12,6 +12,7 @@ import mmm.gui.mmmWorkspace;
 import djf.AppTemplate;
 import static javafx.application.Application.launch;
 import mmm.data.mmmData;
+import mmm.file.mmmFiles;
 
 
 /**
@@ -28,6 +29,7 @@ public class metroMapMakerApp extends AppTemplate {
         // FILE COMPONENT SO WE MUST BE CAREFUL OF THE ORDER
         //fileComponent = new golFiles();
         //dataComponent = new golData(this);
+        fileComponent = new mmmFiles();
         dataComponent = new mmmData(this);
         workspaceComponent = new mmmWorkspace(this);
         

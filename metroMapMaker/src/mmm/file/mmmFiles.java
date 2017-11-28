@@ -48,6 +48,7 @@ import javax.json.stream.JsonGenerator;
 import jtps.jTPS;
 import mmm.data.Draggable;
 import static mmm.data.Draggable.IMAGE;
+import static mmm.data.Draggable.LINE;
 import static mmm.data.Draggable.STATION;
 import mmm.data.DraggableImage;
 import mmm.data.DraggableStation;
@@ -86,9 +87,9 @@ public class mmmFiles implements AppFileComponent {
         // GET THE DATA
         mmmData dataManager = (mmmData) data;
 
-        // FIRST THE BACKGROUND COLOR
-        Color bgColor = dataManager.getBackgroundColor();
-        JsonObject bgColorJson = makeJsonColorObject(bgColor);
+//        // FIRST THE BACKGROUND COLOR
+//        Color bgColor = dataManager.getBackgroundColor();
+//        JsonObject bgColorJson = makeJsonColorObject(bgColor);
 
         // NOW BUILD THE JSON OBJCTS TO SAVE
         JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
@@ -129,7 +130,7 @@ public class mmmFiles implements AppFileComponent {
                         .add(JSON_WIDTH, width)
                         .add(JSON_HEIGHT, height).build();
 
-            } else if (draggableShape.getShapeType().equals(STATION)) {
+            } else if (draggableShape.getShapeType().equals(STATION) || draggableShape.getShapeType().equals(LINE)) {
                 JsonObject fillColorJson = makeJsonColorObject((Color) shape.getFill());
                 JsonObject outlineColorJson = makeJsonColorObject((Color) shape.getStroke());
                 double outlineThickness = shape.getStrokeWidth();
@@ -178,7 +179,7 @@ public class mmmFiles implements AppFileComponent {
 
         // THEN PUT IT ALL TOGETHER IN A JsonObject
         JsonObject dataManagerJSO = Json.createObjectBuilder()
-                .add(JSON_BG_COLOR, bgColorJson)
+                //.add(JSON_BG_COLOR, bgColorJson)
                 .add(JSON_SHAPES, shapesArray)
                 .build();
 
