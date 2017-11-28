@@ -47,15 +47,13 @@ import mmm.data.DraggableStation;
 import mmm.data.DraggableText;
 import mmm.data.mmmData;
 
-
-
 /**
  *
  * @author naimyoussiftraore
  */
 public class MapEditController {
-    
-     // FOR JSON LOADING
+
+    // FOR JSON LOADING
     static final String JSON_BG_COLOR = "background_color";
     static final String JSON_RED = "red";
     static final String JSON_GREEN = "green";
@@ -63,6 +61,7 @@ public class MapEditController {
     static final String JSON_ALPHA = "alpha";
     static final String JSON_SHAPES = "shapes";
     static final String JSON_STATIONS = "stations";
+    static final String JSON_LINES = "lines";
     static final String JSON_SHAPE = "shape";
     static final String JSON_TYPE = "type";
     static final String JSON_NAME = "name";
@@ -70,7 +69,7 @@ public class MapEditController {
     static final String JSON_Y = "y";
     static final String JSON_WIDTH = "width";
     static final String JSON_HEIGHT = "height";
-    static final String JSON_FILL_COLOR = "fill_color";
+    static final String JSON_FILL_COLOR = "color";
     static final String JSON_OUTLINE_COLOR = "outline_color";
     static final String JSON_OUTLINE_THICKNESS = "outline_thickness";
 
@@ -200,105 +199,111 @@ public class MapEditController {
     public void processMoveStation() {
 
     }
-    
-        /**
-     * This method processes a user request to take a snapshot of the
-     * current scene.
+
+    /**
+     * This method processes a user request to take a snapshot of the current
+     * scene.
      */
     public void processSnapshot() {
-        
-	mmmWorkspace workspace = (mmmWorkspace)app.getWorkspaceComponent();
+
+        mmmWorkspace workspace = (mmmWorkspace) app.getWorkspaceComponent();
         String mapName = workspace.mapName;
-	Pane canvas = workspace.getCanvas();
-	WritableImage image = canvas.snapshot(new SnapshotParameters(), null);
-	File file = new File("export/" + mapName + "/" + mapName + " Metro.png");
-	try {
-	    ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
-	}
-	catch(IOException ioe) {
-	    ioe.printStackTrace();
-	}
-    } 
-    
+        Pane canvas = workspace.getCanvas();
+        WritableImage image = canvas.snapshot(new SnapshotParameters(), null);
+        File file = new File("export/" + mapName + "/" + mapName + " Metro.png");
+        try {
+            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
     public void processExportJSON() throws UnsupportedEncodingException, IOException {
-        
-        mmmWorkspace workspace = (mmmWorkspace)app.getWorkspaceComponent();
+
+        mmmWorkspace workspace = (mmmWorkspace) app.getWorkspaceComponent();
         String mapName = workspace.mapName;
-        
+
         // NOW BUILD THE JSON OBJCTS TO SAVE
-        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        JsonArrayBuilder arrayBuilder1 = Json.createArrayBuilder();
         ObservableList<Node> shapes = dataManager.getShapes();
         for (Node node : shapes) {
+
             Shape shape = (Shape) node;
+
             Draggable draggableShape = ((Draggable) shape);
             String type = draggableShape.getShapeType();
-            String name = draggableShape.getName();
-            double x = draggableShape.getX();
-            double y = draggableShape.getY();
-            double width = 0;
-            double height = 0;
-            if (draggableShape.getShapeType().equals(STATION) || draggableShape.getShapeType().equals(IMAGE)) {
-                width = draggableShape.getWidth();
-                height = draggableShape.getHeight();
-            }
 
-            JsonObject shapeJson = null;
+            if (type.equals("LINE")) {
 
-            if (draggableShape.getShapeType().equals(IMAGE)) {
-                File file = ((DraggableImage) shape).getImageFile();
-                Path path = Paths.get(file.toURI());
-
-                ByteArrayOutputStream bytes = new ByteArrayOutputStream(
-                        (int) (Files.size(path) * 4 / 3 + 4));
-
-                try (OutputStream base64Stream = Base64.getEncoder().wrap(bytes)) {
-                    Files.copy(path, base64Stream);
+                String name = draggableShape.getName();
+                double x = draggableShape.getX();
+                double y = draggableShape.getY();
+                double width = 0;
+                double height = 0;
+                if (draggableShape.getShapeType().equals(STATION) || draggableShape.getShapeType().equals(IMAGE)) {
+                    width = draggableShape.getWidth();
+                    height = draggableShape.getHeight();
                 }
 
-                String base64 = bytes.toString("US-ASCII");
+                JsonObject shapeJson = null;
 
-                shapeJson = Json.createObjectBuilder()
-                        .add("image", base64)
-                        .add(JSON_TYPE, type)
-                        .add(JSON_X, x)
-                        .add(JSON_Y, y)
-                        .add(JSON_WIDTH, width)
-                        .add(JSON_HEIGHT, height).build();
+                if (draggableShape.getShapeType().equals(IMAGE)) {
+                    File file = ((DraggableImage) shape).getImageFile();
+                    Path path = Paths.get(file.toURI());
 
-            } else if (draggableShape.getShapeType().equals(STATION) || draggableShape.getShapeType().equals(LINE)) {
-                JsonObject fillColorJson = makeJsonColorObject((Color) shape.getFill());
-                JsonObject outlineColorJson = makeJsonColorObject((Color) shape.getStroke());
-                double outlineThickness = shape.getStrokeWidth();
+                    ByteArrayOutputStream bytes = new ByteArrayOutputStream(
+                            (int) (Files.size(path) * 4 / 3 + 4));
 
-                shapeJson = Json.createObjectBuilder()
-                        .add(JSON_NAME, name)
-                        .add(JSON_X, x)
-                        .add(JSON_Y, y).build();
+                    try (OutputStream base64Stream = Base64.getEncoder().wrap(bytes)) {
+                        Files.copy(path, base64Stream);
+                    }
+
+                    String base64 = bytes.toString("US-ASCII");
+
+                    shapeJson = Json.createObjectBuilder()
+                            .add("image", base64)
+                            .add(JSON_TYPE, type)
+                            .add(JSON_X, x)
+                            .add(JSON_Y, y)
+                            .add(JSON_WIDTH, width)
+                            .add(JSON_HEIGHT, height).build();
+
+                } else if (draggableShape.getShapeType().equals(STATION) || draggableShape.getShapeType().equals(LINE)) {
+                    JsonObject fillColorJson = makeJsonColorObject((Color) shape.getFill());
+                    JsonObject outlineColorJson = makeJsonColorObject((Color) shape.getStroke());
+                    double outlineThickness = shape.getStrokeWidth();
+
+                    shapeJson = Json.createObjectBuilder()
+                            .add(JSON_NAME, name)
+                            .add(JSON_FILL_COLOR, fillColorJson)
+                            .add(JSON_X, x)
+                            .add(JSON_Y, y).build();
 //                        .add(JSON_WIDTH, width)
 //                        .add(JSON_HEIGHT, height)
 //                        .add(JSON_FILL_COLOR, fillColorJson)
 //                        .add(JSON_OUTLINE_COLOR, outlineColorJson)
 //                        .add(JSON_OUTLINE_THICKNESS, outlineThickness).build();
-            } else {
-                
-                
-                String text = ((DraggableText) draggableShape).getText();
-                double textSize = ((DraggableText) draggableShape).getFont().getSize();
-                String fontFamily =  ((DraggableText) draggableShape).getFont().getFamily();
-                
-                int isBold = 0;
-                int isItalic = 0;
-                
-                if(((DraggableText) draggableShape).isBold()) 
-                    isBold = 1;
-                
-                if (((DraggableText) draggableShape).isItalic()) 
-                    isItalic = 1;
-                
-                shapeJson = Json.createObjectBuilder()
-                        .add(JSON_NAME, name)
-                        .add(JSON_X, x)
-                        .add(JSON_Y, y).build();
+                } else {
+
+                    String text = ((DraggableText) draggableShape).getText();
+                    double textSize = ((DraggableText) draggableShape).getFont().getSize();
+                    String fontFamily = ((DraggableText) draggableShape).getFont().getFamily();
+
+                    int isBold = 0;
+                    int isItalic = 0;
+
+                    if (((DraggableText) draggableShape).isBold()) {
+                        isBold = 1;
+                    }
+
+                    if (((DraggableText) draggableShape).isItalic()) {
+                        isItalic = 1;
+                    }
+
+                    shapeJson = Json.createObjectBuilder()
+                            .add(JSON_NAME, name)
+                            .add(JSON_X, x)
+                            .add(JSON_Y, y).build();
 //                        .add(JSON_WIDTH, width)
 //                        .add(JSON_HEIGHT, height)
 //                        .add("bold", isBold)
@@ -306,17 +311,125 @@ public class MapEditController {
 //                        .add("size", textSize)
 //                        .add("family", fontFamily)
 //                        .add("text", text).build();
+                }
+
+                arrayBuilder1.add(shapeJson);
+
             }
 
-            arrayBuilder.add(shapeJson);
         }
-        JsonArray shapesArray = arrayBuilder.build();
+        
+        
+        JsonArray linesArray = arrayBuilder1.build();
+        
+          JsonArrayBuilder arrayBuilder2 = Json.createArrayBuilder();
+        //ObservableList<Node> shapes = dataManager.getShapes();
+        for (Node node : shapes) {
+
+            Shape shape = (Shape) node;
+
+            Draggable draggableShape = ((Draggable) shape);
+            String type = draggableShape.getShapeType();
+
+            if (type.equals("STATION")) {
+
+                String name = draggableShape.getName();
+                double x = draggableShape.getX();
+                double y = draggableShape.getY();
+                double width = 0;
+                double height = 0;
+                if (draggableShape.getShapeType().equals(STATION) || draggableShape.getShapeType().equals(IMAGE)) {
+                    width = draggableShape.getWidth();
+                    height = draggableShape.getHeight();
+                }
+
+                JsonObject shapeJson = null;
+
+                if (draggableShape.getShapeType().equals(IMAGE)) {
+                    File file = ((DraggableImage) shape).getImageFile();
+                    Path path = Paths.get(file.toURI());
+
+                    ByteArrayOutputStream bytes = new ByteArrayOutputStream(
+                            (int) (Files.size(path) * 4 / 3 + 4));
+
+                    try (OutputStream base64Stream = Base64.getEncoder().wrap(bytes)) {
+                        Files.copy(path, base64Stream);
+                    }
+
+                    String base64 = bytes.toString("US-ASCII");
+
+                    shapeJson = Json.createObjectBuilder()
+                            .add("image", base64)
+                            .add(JSON_TYPE, type)
+                            .add(JSON_X, x)
+                            .add(JSON_Y, y)
+                            .add(JSON_WIDTH, width)
+                            .add(JSON_HEIGHT, height).build();
+
+                } else if (draggableShape.getShapeType().equals(STATION) || draggableShape.getShapeType().equals(LINE)) {
+                    JsonObject fillColorJson = makeJsonColorObject((Color) shape.getFill());
+                    JsonObject outlineColorJson = makeJsonColorObject((Color) shape.getStroke());
+                    double outlineThickness = shape.getStrokeWidth();
+
+                    shapeJson = Json.createObjectBuilder()
+                            .add(JSON_NAME, name)
+                            .add(JSON_X, x)
+                            .add(JSON_Y, y).build();
+//                        .add(JSON_WIDTH, width)
+//                        .add(JSON_HEIGHT, height)
+//                        .add(JSON_FILL_COLOR, fillColorJson)
+//                        .add(JSON_OUTLINE_COLOR, outlineColorJson)
+//                        .add(JSON_OUTLINE_THICKNESS, outlineThickness).build();
+                } else {
+
+                    String text = ((DraggableText) draggableShape).getText();
+                    double textSize = ((DraggableText) draggableShape).getFont().getSize();
+                    String fontFamily = ((DraggableText) draggableShape).getFont().getFamily();
+
+                    int isBold = 0;
+                    int isItalic = 0;
+
+                    if (((DraggableText) draggableShape).isBold()) {
+                        isBold = 1;
+                    }
+
+                    if (((DraggableText) draggableShape).isItalic()) {
+                        isItalic = 1;
+                    }
+
+                    shapeJson = Json.createObjectBuilder()
+                            .add(JSON_NAME, name)
+                            .add(JSON_X, x)
+                            .add(JSON_Y, y).build();
+//                        .add(JSON_WIDTH, width)
+//                        .add(JSON_HEIGHT, height)
+//                        .add("bold", isBold)
+//                        .add("italic", isItalic)
+//                        .add("size", textSize)
+//                        .add("family", fontFamily)
+//                        .add("text", text).build();
+                }
+
+                arrayBuilder2.add(shapeJson);
+
+            }
+
+        }
+        
+        
+        JsonArray stationsArray = arrayBuilder2.build();
 
         // THEN PUT IT ALL TOGETHER IN A JsonObject
         JsonObject dataManagerJSO = Json.createObjectBuilder()
                 //.add(JSON_BG_COLOR, bgColorJson)
-                .add(JSON_STATIONS, shapesArray)
+                .add(JSON_LINES, linesArray)
+                .add(JSON_STATIONS, stationsArray)
                 .build();
+        
+        
+        
+        
+        
 
         // AND NOW OUTPUT IT TO A JSON FILE WITH PRETTY PRINTING
         Map<String, Object> properties = new HashMap<>(1);
@@ -336,8 +449,8 @@ public class MapEditController {
         pw.write(prettyPrinted);
         pw.close();
     }
-    
-     private JsonObject makeJsonColorObject(Color color) {
+
+    private JsonObject makeJsonColorObject(Color color) {
         JsonObject colorJson = Json.createObjectBuilder()
                 .add(JSON_RED, color.getRed())
                 .add(JSON_GREEN, color.getGreen())
@@ -345,7 +458,5 @@ public class MapEditController {
                 .add(JSON_ALPHA, color.getOpacity()).build();
         return colorJson;
     }
-
-
 
 }
