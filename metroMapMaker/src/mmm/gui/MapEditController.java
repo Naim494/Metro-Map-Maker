@@ -422,6 +422,7 @@ public class MapEditController {
         // THEN PUT IT ALL TOGETHER IN A JsonObject
         JsonObject dataManagerJSO = Json.createObjectBuilder()
                 //.add(JSON_BG_COLOR, bgColorJson)
+                .add(JSON_NAME, mapName)
                 .add(JSON_LINES, linesArray)
                 .add(JSON_STATIONS, stationsArray)
                 .build();
