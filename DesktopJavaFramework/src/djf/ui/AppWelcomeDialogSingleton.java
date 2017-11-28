@@ -61,6 +61,7 @@ public class AppWelcomeDialogSingleton extends Stage {
 
     BorderPane bp1;
     BorderPane bp2;
+    String name = "";
 
     private AppWelcomeDialogSingleton() {
     }
@@ -130,6 +131,7 @@ public class AppWelcomeDialogSingleton extends Stage {
         bp2.setCenter(newWork);
         
         File recentList = new File("recentList.txt");
+        
 
         newWork.setOnAction(e -> {
             PropertiesManager props = PropertiesManager.getPropertiesManager();
@@ -137,7 +139,7 @@ public class AppWelcomeDialogSingleton extends Stage {
             AppTextInputDialogSingleton textDialog = AppTextInputDialogSingleton.getSingleton();
             textDialog.isCancelled = false;
 
-            String name = "";
+            //String name = "";
             boolean done = false;
             
 
@@ -226,5 +228,9 @@ public class AppWelcomeDialogSingleton extends Stage {
 
         return maps;
     
+    }
+    
+    public String getName() {
+        return name;
     }
 }

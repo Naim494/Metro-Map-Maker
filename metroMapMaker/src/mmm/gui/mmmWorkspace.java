@@ -11,10 +11,16 @@ import djf.components.AppWorkspaceComponent;
 import static djf.settings.AppStartupConstants.FILE_PROTOCOL;
 import static djf.settings.AppStartupConstants.PATH_IMAGES;
 import djf.ui.AppGUI;
+import djf.ui.AppMessageDialogSingleton;
+import djf.ui.AppYesNoCancelDialogSingleton;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
@@ -31,12 +37,17 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import static mmm.css.mmmStyle.CLASS_BUTTON;
 import static mmm.css.mmmStyle.CLASS_COLOR_CHOOSER_CONTROL;
 import static mmm.css.mmmStyle.CLASS_EDIT_TOOLBAR;
 import static mmm.css.mmmStyle.CLASS_EDIT_TOOLBAR_ROW;
 import static mmm.css.mmmStyle.CLASS_RENDER_CANVAS;
+import mmm.data.Draggable;
+import mmm.data.DraggableLine;
+import mmm.data.mmmData;
 import static mmm.mmmLanguageProperty.ADD_IMAGE_TOOLTIP;
 import static mmm.mmmLanguageProperty.ADD_LABEL_TOOLTIP;
 import static mmm.mmmLanguageProperty.ADD_LINE_TOOLTIP;
@@ -113,11 +124,12 @@ public class mmmWorkspace extends AppWorkspaceComponent {
     Label metroLinesLabel;
     ComboBox<String> changeLineName;
     ColorPicker changeLineColor;
-    Button addLine;
-    Button removeLine;
-    Button addStationToLine;
-    Button removeStationFromLine;
-    Button listAllStationsInLine;
+    Button editLineButton;
+    Button addLineButton;
+    Button removeLineButton;
+    Button addStationToLineButton;
+    Button removeStationFromLineButton;
+    Button listAllStationsInLineButton;
     Slider lineThicknessSlider;
 
     // SECOND ROW
@@ -128,11 +140,11 @@ public class mmmWorkspace extends AppWorkspaceComponent {
     Label metroStationsLabel;
     ComboBox<String> changeStationName;
     ColorPicker changeStationFillColor;
-    Button addStation;
-    Button removeStation;
-    Button snapToGrid;
-    Button moveStationLabel;
-    Button rotateStationLabel;
+    Button addStationButton;
+    Button removeStationButton;
+    Button snapToGridButton;
+    Button moveStationLabelButton;
+    Button rotateStationLabelButton;
     Slider changeStationCircleRadius;
 
     // THIRD ROW
@@ -183,6 +195,24 @@ public class mmmWorkspace extends AppWorkspaceComponent {
     Button expand;
 
     Pane canvas;
+    
+     // HERE ARE THE CONTROLLERS
+    CanvasController canvasController;
+    MapEditController mapEditController;
+
+    // HERE ARE OUR DIALOGS
+    AppMessageDialogSingleton messageDialog;
+    AppYesNoCancelDialogSingleton yesNoCancelDialog;
+    
+     // FOR DISPLAYING DEBUG STUFF
+    Text debugText;
+    
+    //BOOLEAN FLAG FOR ADDING STATION TO A LINE
+    boolean addingStation = false;
+    
+    DraggableLine line = null;
+    
+    String mapName = "";
 
     /**
      * Constructor for initializing the workspace, note that this constructor
@@ -208,6 +238,37 @@ public class mmmWorkspace extends AppWorkspaceComponent {
 
         // AND INIT THE STYLE FOR THE WORKSPACE
         initStyle();
+        
+        //mapName = gui.getNameOfMap();
+    }
+    
+//    // ACCESSOR METHODS FOR COMPONENTS THAT EVENT HANDLERS
+//    // MAY NEED TO UPDATE OR ACCESS DATA FROM
+//    public ColorPicker getFillColorPicker() {
+//        return fillColorPicker;
+//    }
+//
+//    public ColorPicker getOutlineColorPicker() {
+//        return outlineColorPicker;
+//    }
+//
+//    public ColorPicker getBackgroundColorPicker() {
+//        return backgroundColorPicker;
+//    }
+//
+//    public Slider getOutlineThicknessSlider() {
+//        return outlineThicknessSlider;
+//    }
+    
+    /**
+     * Note that this is for displaying text during development.
+     */
+    public void setDebugText(String text) {
+        debugText.setText(text);
+    }
+    
+    public Pane getCanvas() {
+        return canvas;
     }
 
     private void initLayout() {
@@ -232,18 +293,23 @@ public class mmmWorkspace extends AppWorkspaceComponent {
         changeLineName.setTooltip(new Tooltip(props.getProperty(EDIT_LINE_NAME_TOOLTIP.toString())));
         changeLineName.setPromptText(props.getProperty(EDIT_LINE_NAME_TOOLTIP.toString()));
         changeLineName.setEditable(true);
+        editLineButton = new Button();
+        editLineButton.setText("Edit\nLine");
+        editLineButton.setDisable(false);
+        
 
         h1.getChildren().add(metroLinesLabel);
         h1.getChildren().add(changeLineName);
         h1.getChildren().add(changeLineColor);
+        h1.getChildren().add(editLineButton);
 
-        addLine = gui.initChildButton(h2, PLUS_ICON.toString(), ADD_LINE_TOOLTIP.toString(), true);
-        removeLine = gui.initChildButton(h2, MINUS_ICON.toString(), REMOVE_LINE_TOOLTIP.toString(), true);
-        addStationToLine = gui.initChildButton(h2, ADD_STATION_TO_LINE_TOOLTIP.toString(), true);
-        addStationToLine.setText("Add\nStation");
-        removeStationFromLine = gui.initChildButton(h2, REMOVE_STATION_FROM_LINE_TOOLTIP.toString(), true);
-        removeStationFromLine.setText("Remove\nStation");
-        listAllStationsInLine = gui.initChildButton(h2, LIST_STATIONS_ICON.toString(), LIST_ALL_STATIONS_TOOLTIP.toString(), true);
+        addLineButton = gui.initChildButton(h2, PLUS_ICON.toString(), ADD_LINE_TOOLTIP.toString(), false);
+        removeLineButton = gui.initChildButton(h2, MINUS_ICON.toString(), REMOVE_LINE_TOOLTIP.toString(), false);
+        addStationToLineButton = gui.initChildButton(h2, ADD_STATION_TO_LINE_TOOLTIP.toString(), true);
+        addStationToLineButton.setText("Add\nStation");
+        removeStationFromLineButton = gui.initChildButton(h2, REMOVE_STATION_FROM_LINE_TOOLTIP.toString(), true);
+        removeStationFromLineButton.setText("Remove\nStation");
+        listAllStationsInLineButton = gui.initChildButton(h2, LIST_STATIONS_ICON.toString(), LIST_ALL_STATIONS_TOOLTIP.toString(), true);
 
         lineThicknessSlider = new Slider(0, 10, 1);
         lineThicknessSlider.setTooltip(new Tooltip(props.getProperty(CHANGE_LINE_THICKNESS_TOOLTIP.toString())));
@@ -272,13 +338,13 @@ public class mmmWorkspace extends AppWorkspaceComponent {
         h11.getChildren().add(changeStationName);
         h11.getChildren().add(changeStationFillColor);
 
-        addStation = gui.initChildButton(h22, PLUS_ICON.toString(), ADD_STATION_TOOLTIP.toString(), true);
-        removeStation = gui.initChildButton(h22, MINUS_ICON.toString(), REMOVE_STATION_TOOLTIP.toString(), true);
-        snapToGrid = gui.initChildButton(h22, SNAP_TO_GRID_TOOLTIP.toString(), true);
-        snapToGrid.setText("Snap");
-        moveStationLabel = gui.initChildButton(h22, MOVE_STATION_LABEL_TOOLTIP.toString(), true);
-        moveStationLabel.setText("Move\nLabel");
-        rotateStationLabel = gui.initChildButton(h22, ROTATE_ICON.toString(), ROTATE_STATION_LABEL_TOOLTIP.toString(), true);
+        addStationButton = gui.initChildButton(h22, PLUS_ICON.toString(), ADD_STATION_TOOLTIP.toString(), false);
+        removeStationButton = gui.initChildButton(h22, MINUS_ICON.toString(), REMOVE_STATION_TOOLTIP.toString(), false);
+        snapToGridButton = gui.initChildButton(h22, SNAP_TO_GRID_TOOLTIP.toString(), true);
+        snapToGridButton.setText("Snap");
+        moveStationLabelButton = gui.initChildButton(h22, MOVE_STATION_LABEL_TOOLTIP.toString(), true);
+        moveStationLabelButton.setText("Move\nLabel");
+        rotateStationLabelButton = gui.initChildButton(h22, ROTATE_ICON.toString(), ROTATE_STATION_LABEL_TOOLTIP.toString(), true);
 
         changeStationCircleRadius = new Slider(0, 10, 1);
         changeStationCircleRadius.setTooltip(new Tooltip(props.getProperty(CHANGE_STATION_RADIUS_TOOLTIP.toString())));
@@ -399,8 +465,16 @@ public class mmmWorkspace extends AppWorkspaceComponent {
 
         // WE'LL RENDER OUR STUFF HERE IN THE CANVAS
         canvas = new Pane();
+        debugText = new Text();
+        canvas.getChildren().add(debugText);
+        debugText.setX(100);
+        debugText.setY(100);
         
         scrollPane.setContent(editToolbar);
+        
+        // AND MAKE SURE THE DATA MANAGER IS IN SYNCH WITH THE PANE
+        mmmData data = (mmmData) app.getDataComponent();
+        data.setShapes(canvas.getChildren());
 
         // AND NOW SETUP THE WORKSPACE
         workspace = new BorderPane();
@@ -410,6 +484,114 @@ public class mmmWorkspace extends AppWorkspaceComponent {
     }
 
     private void initControllers() {
+        
+         // MAKE THE EDIT CONTROLLER
+        mapEditController = new MapEditController(app);
+        
+         // NOW CONNECT THE BUTTONS TO THEIR HANDLERS
+         
+         addLineButton.setOnAction(e -> {
+            mapEditController.processAddLine();
+        });
+         
+         addStationButton.setOnAction(e -> {
+            mapEditController.processAddNewStation();
+        });
+         
+         removeLineButton.setOnAction(e -> {
+            mapEditController.processRemoveLine();
+        });
+         
+         removeStationButton.setOnAction(e -> {
+             
+            mapEditController.processRemoveStation();
+        });
+         
+         editLineButton.setOnAction(e -> {
+             
+            mapEditController.processEditLine();
+        });
+         
+        
+          
+         addStationToLineButton.setOnAction(e -> {
+             
+           
+            if(line == null && mapEditController.dataManager.getSelectedShape() != null){
+                addingStation = true;
+                line = (DraggableLine)mapEditController.dataManager.getSelectedShape();
+            }
+                 
+           
+             
+         
+        });
+         
+         
+         
+         
+         
+         
+       // MAKE THE CANVAS CONTROLLER	
+        canvasController = new CanvasController(app);
+
+        canvas.setOnMousePressed(e -> {
+            
+              canvasController.processCanvasMousePress((int) e.getX(), (int) e.getY());
+              
+              //addingStation = false;
+
+        });
+
+        canvas.setOnMouseReleased(e -> {
+
+            canvasController.processCanvasMouseRelease((int) e.getX(), (int) e.getY());
+        });
+
+        canvas.setOnMouseDragged(e -> {
+
+            canvasController.processCanvasMouseDragged((int) e.getX(), (int) e.getY());
+        });
+
+        canvas.setOnMouseClicked(e -> {
+
+            if (e.getClickCount() == 2) {
+                canvasController.processCanvasMouseDoubleClicked((int) e.getX(), (int) e.getY());
+
+            }
+        });
+
+        
+        gui.getExportButton().setOnAction(e -> {
+            mapName = gui.getNameOfMap(); 
+            mapEditController.processSnapshot();
+            try {
+                mapEditController.processExportJSON();
+            } catch (IOException ex) {
+                Logger.getLogger(mmmWorkspace.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+         
+    }
+    
+     // HELPER METHOD
+    public void loadSelectedShapeSettings(Node node) {
+
+        try {
+            Shape shape = (Shape) node;
+
+            if (shape != null) {
+                Color fillColor = (Color) shape.getFill();
+                Color strokeColor = (Color) shape.getStroke();
+                double lineThickness = shape.getStrokeWidth();
+//                fillColorPicker.setValue(fillColor);
+//                outlineColorPicker.setValue(strokeColor);
+//                outlineThicknessSlider.setValue(lineThickness);
+            }
+
+        } catch (ClassCastException e) {
+
+        }
 
     }
 
@@ -487,6 +669,11 @@ public class mmmWorkspace extends AppWorkspaceComponent {
 
         // AND RETURN THE COMPLETED BUTTON
         return button;
+    }
+    
+    public boolean addingStation(){
+        
+        return addingStation;
     }
 
 }

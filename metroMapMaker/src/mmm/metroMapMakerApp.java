@@ -28,8 +28,9 @@ public class metroMapMakerApp extends AppTemplate {
         // FILE COMPONENT SO WE MUST BE CAREFUL OF THE ORDER
         //fileComponent = new golFiles();
         //dataComponent = new golData(this);
-        workspaceComponent = new mmmWorkspace(this);
         dataComponent = new mmmData(this);
+        workspaceComponent = new mmmWorkspace(this);
+        
     }
 
     /**

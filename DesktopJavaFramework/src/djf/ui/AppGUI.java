@@ -65,7 +65,8 @@ public class AppGUI {
     protected Button loadButton;
     protected Button saveButton;
     protected Button exitButton;
-
+    protected Button exportButton;
+    
     // THIS IS THE EDIT TOOLBAR AND ITS CONTROLS
     protected FlowPane editToolbar;
 
@@ -93,6 +94,8 @@ public class AppGUI {
 
     // THIS TITLE WILL GO IN THE TITLE BAR
     protected String appTitle;
+    
+    protected String nameOfMap = "";
 
     /**
      * This constructor initializes the file toolbar for use.
@@ -230,6 +233,10 @@ public class AppGUI {
         loadButton = initChildButton(fileToolbar, LOAD_ICON.toString(), LOAD_TOOLTIP.toString(), false);
         saveButton = initChildButton(fileToolbar, SAVE_ICON.toString(), SAVE_TOOLTIP.toString(), true);
         exitButton = initChildButton(fileToolbar, EXIT_ICON.toString(), EXIT_TOOLTIP.toString(), false);
+        exportButton = new Button();
+        exportButton.setText("Export");
+        exportButton.setDisable(false);
+        fileToolbar.getChildren().add(exportButton);
 
         languageButton = initChildButton(settingsToolbar, LANGUAGE_ICON.toString(), LANGUAGE_TOOLTIP.toString(), false);
         aboutButton = initChildButton(settingsToolbar, ABOUT_ICON.toString(), ABOUT_TOOLTIP.toString(), false);
@@ -262,6 +269,7 @@ public class AppGUI {
                 while (!(done) && !(textDialog.isCanceled())) {
 
                     name = textDialog.getText();
+                    nameOfMap = textDialog.getText();
 
                     file = new File("export/" + name + "/" + name);
 
@@ -509,5 +517,17 @@ public class AppGUI {
 
     public Button getRedoButton() {
         return redoButton;
+    }
+    
+    public Button getExportButton() {
+        return exportButton;
+    }
+    
+    public String getNameOfMap() {
+        return nameOfMap;
+    }
+    
+    public void setNameOfMap(String name) {
+        this.nameOfMap = name;
     }
 }

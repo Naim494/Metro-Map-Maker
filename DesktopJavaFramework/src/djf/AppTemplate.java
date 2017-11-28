@@ -43,6 +43,9 @@ public abstract class AppTemplate extends Application {
     public static AppSelectLanguageDialogSingleton selectLanguageDialog;
     public static AppAboutMessageDialogSingleton aboutDialog;
     public static AppTextInputDialogSingleton textInputDialog;
+    public static AppAddLineDialogSingleton addLineDialog;
+    public static AppAddStationDialogSingleton addStationDialog;
+    public static AppRemoveNodeDialogSingleton removeItemDialog;
     public static AppWelcomeDialogSingleton welcomeDialog;
 
     // THIS METHOD MUST BE OVERRIDDEN WHERE THE CUSTOM BUILDER OBJECT
@@ -105,6 +108,15 @@ public abstract class AppTemplate extends Application {
         textInputDialog = AppTextInputDialogSingleton.getSingleton();
         textInputDialog.init(primaryStage);
         
+        addLineDialog = AppAddLineDialogSingleton.getSingleton();
+        addLineDialog.init(primaryStage);
+        
+        addStationDialog = AppAddStationDialogSingleton.getSingleton();
+        addStationDialog.init(primaryStage);
+        
+        removeItemDialog = AppRemoveNodeDialogSingleton.getSingleton();
+        removeItemDialog.init(primaryStage);
+        
         welcomeDialog = AppWelcomeDialogSingleton.getSingleton();
         welcomeDialog.init(primaryStage, this);
         
@@ -156,6 +168,8 @@ public abstract class AppTemplate extends Application {
                 buildAppComponentsHook();
                 
                 welcomeDialog.showAndWait();
+                
+                gui.setNameOfMap(welcomeDialog.getName());
 
                 // NOW OPEN UP THE WINDOW
                 primaryStage.show();
