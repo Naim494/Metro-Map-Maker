@@ -8,35 +8,68 @@ package mmm.data;
 import java.util.ArrayList;
 import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Polyline;
+import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
 
 /**
  *
  * @author naimyoussiftraore
  */
-public class DraggableLine extends Polyline implements Draggable {
+public class DraggableLine extends Line implements Draggable {
 
     double startX;
     double startY;
+    public DraggableText label1 = new DraggableText();
+    public DraggableText label2 = new DraggableText();
     String name;
-    ArrayList<DraggableStation> stations;
+    public Color color;
+    ArrayList<DraggableStation> stations = new ArrayList<DraggableStation>();
+    private DraggableLine extension = null;
+    boolean isExtension = false;
     
+     public DraggableLine() {
+         
+     }
+
+    public DraggableLine(DraggableStation s) {
+
+        setStrokeWidth(5.0);
+        startXProperty().bind(label1.xProperty());
+        startYProperty().bind(label1.yProperty());
+        endXProperty().bind(s.centerXProperty());
+        endYProperty().bind(s.centerYProperty());
+        isExtension = true;
+    }
 
     public DraggableLine(String name, Color color) {
+        setStrokeWidth(5.0);
         this.name = name;
+        this.label1.setText(name);
+        this.label2.setText(name);
+        this.color = color;
         setStroke(color);
         setFill(color);
-        getPoints().addAll(new Double[]{
-            20.0, 10.0,
-            20.0, 50.0});
-        
-        setStrokeWidth(5.0);
-        
+        System.out.print(name);
+
+        this.label1.setX(20.0);
+        this.label1.setY(10.0);
+        this.label2.setX(20.0);
+        this.label2.setY(50.0);
+
+//        setStartX(20.0);
+//        setStartY(10.0);
+//        setEndX(20.0);
+//        setEndY(50.0);
+
         startX = 0.0;
         startY = 0.0;
-        
-        
-       
+
+        startXProperty().bind(label1.xProperty());
+        startYProperty().bind(label1.yProperty());
+        endXProperty().bind(label2.xProperty());
+        endYProperty().bind(label2.yProperty());
+
+
     }
 
     @Override
@@ -47,57 +80,35 @@ public class DraggableLine extends Polyline implements Draggable {
     @Override
     public void start(int x, int y) {
         startX = x;
-	startY = y;
-	//setX(x);
-	//setY(y);
+        startY = y;
+        //setX(x);
+        //setY(y);
         //layoutXProperty().set(x);
         //layoutYProperty().set(y);
-        
-       
+
     }
 
     @Override
     public void drag(int x, int y) {
-        double diffX = x - getLayoutX() ;
-	double diffY = y - getLayoutY() ;
-	double newX = getLayoutX() + diffX;
-	double newY = getLayoutY() + diffY;
-	//xProperty().set(newX);
-	//yProperty().set(newY);
-        layoutXProperty().set(newX);
-        layoutYProperty().set(newY);
-        startX = x;
-	startY = y;
-        
-        ObservableList<Double> points = this.getPoints();
-        
-        int c = 1;
-        double y1 = 0;
-        
-        for(double p : points) {
-            
-            if(c%2 == 0) {
-                if(c == 2){
-                    p = newY;
-                 
-                }
-                else 
-                    p = y1 + 40.0;
-            }
-            else{
-                p = newX;
-            }
-            
-            c = c + 1;
-              
-        }
-               
-//        this.getPoints().clear();
+//        double diffX = x - getLayoutX();
+//        double diffY = y - getLayoutY();
+//        double newX = getLayoutX() + diffX;
+//        double newY = getLayoutY() + diffY;
+//        startXProperty().set(newX);
+//
+//        startYProperty().set(newY);
 //        
-//        for(double z : points) {
-//            
-//            this.getPoints().add(z);
-//        }
+//        endXProperty().set(newX);
+//        endYProperty().set(newY + 40);
+//        
+//        System.out.print(newX + " " + newY);
+//        
+//        
+//        //layoutXProperty().set(newX);
+//        //layoutYProperty().set(newY);
+//        startX = x;
+//        startY = y;
+
     }
 
     @Override
@@ -112,7 +123,7 @@ public class DraggableLine extends Polyline implements Draggable {
 
     @Override
     public double getY() {
-       return getLayoutX();
+        return getLayoutX();
     }
 
     @Override
@@ -127,34 +138,43 @@ public class DraggableLine extends Polyline implements Draggable {
 
     @Override
     public void setLocationAndSize(double initX, double initY, double initWidth, double initHeight) {
-       layoutXProperty().set(initX);
-        layoutYProperty().set(initY);
-	//widthProperty().set(initWidth);
-	//heightProperty().set(initHeight);emplates.
+        startXProperty().set(initX);
+        startYProperty().set(initY);
+        //widthProperty().set(initWidth);
+        //heightProperty().set(initHeight);emplates.
     }
 
     @Override
     public String getShapeType() {
         return LINE;
-        
+
     }
-    
+
     public ArrayList<DraggableStation> getStations() {
         return stations;
     }
-    
-    public void setName(String name){
+
+    public void setName(String name) {
         this.name = name;
     }
-    
+
     public void setColor(Color color) {
+        this.color = color;
         setStroke(color);
         setFill(color);
-    } 
+    }
 
     @Override
     public String getName() {
         return name;
     }
+    
+    public DraggableLine getExtension(){
+        return extension;
+    
+    }
 
+    public void setExtension(DraggableLine e){
+        this.extension = e;
+    }
 }

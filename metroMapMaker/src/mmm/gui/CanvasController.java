@@ -8,6 +8,7 @@ package mmm.gui;
 import djf.AppTemplate;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.Shape;
 import mmm.data.Draggable;
 import mmm.data.DraggableLine;
@@ -36,9 +37,11 @@ public class CanvasController {
      * Respond to mouse presses on the rendering surface, which we call canvas,
      * but is actually a Pane.
      */
-    public void processCanvasMousePress(int x, int y) {
+    public void processCanvasMousePress(int x, int y) throws CloneNotSupportedException {
         mmmData dataManager = (mmmData) app.getDataComponent();
         mmmWorkspace workspace = (mmmWorkspace) app.getWorkspaceComponent();
+        Pane canvas = workspace.getCanvas();
+        MapEditController mapEditController = new MapEditController(app);
 
         if (dataManager.isInState(SELECTING_SHAPE)) {
             // SELECT THE TOP SHAPE
@@ -48,13 +51,79 @@ public class CanvasController {
             app.getGUI().getCopyButton().setDisable(false);
             app.getGUI().getCutButton().setDisable(false);
 
-            if (workspace.addingStation) {
+            if (shape == null) {
+                workspace.line = null;
+                workspace.addingStation = false;
+            } else if (workspace.addingStation) {
                 if (workspace.line != null && dataManager.getSelectedShape() != null) {
                     if (((Draggable) shape).getShapeType().equals(Draggable.STATION)) {
-                        workspace.line.getStations().add((DraggableStation) dataManager.getSelectedShape());
+                        // workspace.line.getStations().add((DraggableStation) dataManager.getSelectedShape());
+
+                        //GET SELECTED LINE AND STATION
+                        DraggableStation s = (DraggableStation) dataManager.getSelectedShape();
+                        DraggableLine l = workspace.line;
+                        
+                       
+                        double xptn = 0;
+                        double yptn = 0;
+
+                        if (l.getExtension() == null) {
+                            //GET THE POINT TO PLACE THE STATION
+                             xptn = l.getStartX();
+                             yptn = l.getStartY();
+                        }else{
+                            xptn = l.getExtension().getStartX();
+                            yptn = l.getExtension().getStartY();
+                        }
+                        
+                        
+
+                        //MAKE A COPY OF THE STATION
+                        DraggableStation station = (DraggableStation) s.clone();
+                        station.setCenterX(xptn);
+                        station.setCenterY(yptn);
+
+                        //MAKE AN EXTENSION FOR AFTER THE STATION IS ADDED
+                        DraggableLine extension = new DraggableLine(station);
+                        extension.setName(l.getName());
+                        extension.setColor(l.color);
+                        extension.label1.setText(l.getName());
+                        extension.label1.setX(xptn + 20);
+                        extension.label1.setY(yptn + 20);
+                        
+                        //BIND THE ORIGINAL LINE'S START POINT TO THE STATION
+                        if (l.getExtension() == null) {
+                             l.startXProperty().bind(station.centerXProperty());
+                             l.startYProperty().bind(station.centerYProperty());
+                        }else{
+                            l.getExtension().startXProperty().bind(station.centerXProperty());
+                            l.getExtension().startYProperty().bind(station.centerYProperty());
+                        }
+                          
+
+                        //RENDER
+                        if (l.getExtension() == null) {
+                            canvas.getChildren().remove(l.label1);
+                        }else{
+                            canvas.getChildren().remove(l.getExtension().label1);
+                        }
+                            
+                        canvas.getChildren().add(extension);
+                        canvas.getChildren().add(extension.label1);
+                        canvas.getChildren().add(station);
+
+                        //ADD THE STATION TO THE LINE PROGRAMMATICALLY
+                        workspace.lines.get(l.getName()).getStations().add(station);
+
+                        mapEditController.processRemoveStation();
+                        
+                         extension.setExtension(extension);
+                        workspace.lines.get(l.getName()).setExtension(extension);
 
                     }
+
                 }
+                workspace.line = null;
                 workspace.addingStation = false;
 
             }

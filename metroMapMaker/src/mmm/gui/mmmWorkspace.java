@@ -15,6 +15,7 @@ import djf.ui.AppMessageDialogSingleton;
 import djf.ui.AppYesNoCancelDialogSingleton;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,6 +41,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import jtps.jTPS;
 import static mmm.css.mmmStyle.CLASS_BUTTON;
 import static mmm.css.mmmStyle.CLASS_COLOR_CHOOSER_CONTROL;
 import static mmm.css.mmmStyle.CLASS_EDIT_TOOLBAR;
@@ -104,6 +106,8 @@ import properties_manager.PropertiesManager;
  * @author naimyoussiftraore
  */
 public class mmmWorkspace extends AppWorkspaceComponent {
+    
+     static jTPS jTPS = new jTPS();
 
     // HERE'S THE APP
     AppTemplate app;
@@ -210,6 +214,7 @@ public class mmmWorkspace extends AppWorkspaceComponent {
     //BOOLEAN FLAG FOR ADDING STATION TO A LINE
     boolean addingStation = false;
     
+    HashMap<String, DraggableLine> lines = new HashMap<String, DraggableLine>();
     DraggableLine line = null;
     
     String mapName = "";
@@ -305,7 +310,7 @@ public class mmmWorkspace extends AppWorkspaceComponent {
 
         addLineButton = gui.initChildButton(h2, PLUS_ICON.toString(), ADD_LINE_TOOLTIP.toString(), false);
         removeLineButton = gui.initChildButton(h2, MINUS_ICON.toString(), REMOVE_LINE_TOOLTIP.toString(), false);
-        addStationToLineButton = gui.initChildButton(h2, ADD_STATION_TO_LINE_TOOLTIP.toString(), true);
+        addStationToLineButton = gui.initChildButton(h2, ADD_STATION_TO_LINE_TOOLTIP.toString(), false);
         addStationToLineButton.setText("Add\nStation");
         removeStationFromLineButton = gui.initChildButton(h2, REMOVE_STATION_FROM_LINE_TOOLTIP.toString(), true);
         removeStationFromLineButton.setText("Remove\nStation");
@@ -537,9 +542,13 @@ public class mmmWorkspace extends AppWorkspaceComponent {
 
         canvas.setOnMousePressed(e -> {
             
-              canvasController.processCanvasMousePress((int) e.getX(), (int) e.getY());
-              
-              //addingStation = false;
+            try {
+                canvasController.processCanvasMousePress((int) e.getX(), (int) e.getY());
+                
+                //addingStation = false;
+            } catch (CloneNotSupportedException ex) {
+                Logger.getLogger(mmmWorkspace.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
         });
 
@@ -553,13 +562,13 @@ public class mmmWorkspace extends AppWorkspaceComponent {
             canvasController.processCanvasMouseDragged((int) e.getX(), (int) e.getY());
         });
 
-        canvas.setOnMouseClicked(e -> {
-
-            if (e.getClickCount() == 2) {
-                canvasController.processCanvasMouseDoubleClicked((int) e.getX(), (int) e.getY());
-
-            }
-        });
+//        canvas.setOnMouseClicked(e -> {
+//
+//            if (e.getClickCount() == 2) {
+//                canvasController.processCanvasMouseDoubleClicked((int) e.getX(), (int) e.getY());
+//
+//            }
+//        });
 
         
         gui.getExportButton().setOnAction(e -> {

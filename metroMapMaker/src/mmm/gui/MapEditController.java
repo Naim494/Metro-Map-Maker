@@ -81,10 +81,12 @@ public class MapEditController {
     ImageView image;
 
     Shape cutCopiedShape;
+    mmmWorkspace workspace;
 
     public MapEditController(AppTemplate initApp) {
         app = initApp;
         dataManager = (mmmData) app.getDataComponent();
+        workspace = (mmmWorkspace) app.getWorkspaceComponent();
     }
 
     public void processEditLine() {
@@ -115,7 +117,10 @@ public class MapEditController {
             mmmWorkspace workspace = (mmmWorkspace) app.getWorkspaceComponent();
             Pane canvas = workspace.getCanvas();
 
+            workspace.lines.put(name, line);
             canvas.getChildren().add(line);
+            canvas.getChildren().add(line.label1);
+            canvas.getChildren().add(line.label2);
 
             //Toolbar controls need to be updated
         }
@@ -133,6 +138,8 @@ public class MapEditController {
 
             if (selectedShape != null && draggableShape.getShapeType().equals(Draggable.LINE)) {
                 shapes.remove(selectedShape);
+                DraggableLine line = (DraggableLine) selectedShape;
+                workspace.lines.remove(line.getName());
                 //selectedShape = null;
 
                 //workspace.reloadWorkspace(dataManager);
@@ -150,6 +157,10 @@ public class MapEditController {
     public void processAddStationToLine(DraggableLine line) {
 
         line.getStations().add((DraggableStation) dataManager.getSelectedShape());
+        
+        
+        
+        
 
     }
 

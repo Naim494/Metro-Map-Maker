@@ -25,8 +25,8 @@ public class DraggableText extends Text implements Draggable {
     }
     
     public DraggableText(String text) {
-        setX(0.0);
-	setY(0.0);
+        setX(20.0);
+	setY(10.0);
 	setOpacity(1.0);
 	startX = 0.0;
 	startY = 0.0;

@@ -109,4 +109,23 @@ public class DraggableStation extends Ellipse implements Draggable {
     public String getName() {
         return name;
     }
+    
+    @Override
+    public Object clone() {
+        
+        DraggableStation clone = new DraggableStation(this.name);
+        
+        clone.setCenterX(30.0);
+	clone.setCenterY(80.0);
+	clone.setRadiusX(10.0);
+	clone.setRadiusY(10.0);
+	clone.setOpacity(1.0);
+        clone.setStroke(Color.BLACK);
+        clone.setFill(Color.WHITE);
+	clone.startCenterX = 30.0;
+	clone.startCenterY = 80.0;
+        
+        return clone;
+    }
+            
 }
