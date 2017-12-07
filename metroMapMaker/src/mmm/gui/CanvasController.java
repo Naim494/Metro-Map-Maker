@@ -119,6 +119,7 @@ public class CanvasController {
                         
                          extension.setExtension(extension);
                         workspace.lines.get(l.getName()).setExtension(extension);
+                        
 
                     }
 

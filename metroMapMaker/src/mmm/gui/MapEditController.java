@@ -29,6 +29,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
+import javafx.stage.FileChooser;
 import javax.imageio.ImageIO;
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -46,6 +47,14 @@ import mmm.data.DraggableLine;
 import mmm.data.DraggableStation;
 import mmm.data.DraggableText;
 import mmm.data.mmmData;
+import mmm.transactions.AddImageTransaction;
+import mmm.transactions.AddTextTransaction;
+import mmm.transactions.BoldTextTransaction;
+import mmm.transactions.ChangeBackgroundColorTransaction;
+import mmm.transactions.ItalicizeTextTransaction;
+import mmm.transactions.RemoveSelectedShapeTransaction;
+import mmm.transactions.SelectFontFamilyTransaction;
+import mmm.transactions.SelectFontSizeTransaction;
 
 /**
  *
@@ -469,6 +478,115 @@ public class MapEditController {
                 .add(JSON_BLUE, color.getBlue())
                 .add(JSON_ALPHA, color.getOpacity()).build();
         return colorJson;
+    }
+    
+    /**
+     * This method handles a user request to remove the selected shape.
+     */
+    public void processRemoveSelectedShape() {
+
+        RemoveSelectedShapeTransaction transaction = new RemoveSelectedShapeTransaction(app);
+        mmmWorkspace.jTPS.addTransaction(transaction);
+        app.getGUI().getUndoButton().setDisable(false);
+
+    }
+    
+    /**
+     * This method processes a user request to select the background color.
+     */
+    public void processSelectBackgroundColor(Pane canvas, Color color, mmmData data) {
+        
+        ChangeBackgroundColorTransaction transaction = new ChangeBackgroundColorTransaction(canvas, color, data);
+        mmmWorkspace.jTPS.addTransaction(transaction);
+        app.getGUI().getUndoButton().setDisable(false);
+
+       
+    }
+    
+    public void processAddNewImage() {
+      
+        image = new ImageView();
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Image File");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"));
+        File selectedFile = fileChooser.showOpenDialog(app.getGUI().getWindow());
+
+        if (selectedFile != null) {
+            String imagePath = selectedFile.toURI().toString();
+
+            AddImageTransaction transaction = new AddImageTransaction(app, imagePath, selectedFile);
+            mmmWorkspace.jTPS.addTransaction(transaction);
+            app.getGUI().getUndoButton().setDisable(false);
+
+        }
+
+    }
+    
+    public void processAddText() {
+
+        app.textInputDialog.showAndWait();
+
+        String text = app.textInputDialog.getText();
+
+        AddTextTransaction transaction = new AddTextTransaction(app, text);
+        mmmWorkspace.jTPS.addTransaction(transaction);
+        app.getGUI().getUndoButton().setDisable(false);
+
+        
+    }
+    
+    
+    public void processChangeFontFamily(String font) {
+        SelectFontFamilyTransaction transaction = new SelectFontFamilyTransaction(font, app);
+        mmmWorkspace.jTPS.addTransaction(transaction);
+        app.getGUI().getUndoButton().setDisable(false);
+
+    }
+
+    public void processChangeFontSize(String fontSize) {
+        SelectFontSizeTransaction transaction = new SelectFontSizeTransaction(fontSize, app);
+        mmmWorkspace.jTPS.addTransaction(transaction);
+        app.getGUI().getUndoButton().setDisable(false);
+
+    }
+    
+     public void processBoldText() {
+     
+        BoldTextTransaction transaction = new BoldTextTransaction(app);
+        mmmWorkspace.jTPS.addTransaction(transaction);
+        app.getGUI().getUndoButton().setDisable(false);
+
+    }
+
+    public void processItalicizeText() {
+       
+        ItalicizeTextTransaction transaction = new ItalicizeTextTransaction(app);
+        mmmWorkspace.jTPS.addTransaction(transaction);
+        app.getGUI().getUndoButton().setDisable(false);
+
+    }
+    
+    public static boolean isText(Shape shape) {
+        try {
+            DraggableText draggableText = (DraggableText) shape;
+
+            return true;
+
+        } catch (ClassCastException e) {
+            return false;
+        }
+    }
+
+    private boolean isImage(Shape shape) {
+        try {
+            DraggableImage draggableImage = (DraggableImage) shape;
+
+            return true;
+
+        } catch (ClassCastException e) {
+            return false;
+        }
     }
 
 }
