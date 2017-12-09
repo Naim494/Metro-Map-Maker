@@ -7,6 +7,8 @@ package djf.ui;
 
 import djf.AppTemplate;
 import djf.controller.AppFileController;
+import static djf.settings.AppPropertyType.LOAD_ERROR_MESSAGE;
+import static djf.settings.AppPropertyType.LOAD_ERROR_TITLE;
 import static djf.settings.AppPropertyType.NEW_ERROR_MESSAGE;
 import static djf.settings.AppPropertyType.NEW_ERROR_TITLE;
 import static djf.settings.AppStartupConstants.CLOSE_BUTTON_LABEL;
@@ -129,9 +131,8 @@ public class AppWelcomeDialogSingleton extends Stage {
 
         bp1.setCenter(logo);
         bp2.setCenter(newWork);
-        
+
         File recentList = new File("recentList.txt");
-        
 
         newWork.setOnAction(e -> {
             PropertiesManager props = PropertiesManager.getPropertiesManager();
@@ -141,7 +142,6 @@ public class AppWelcomeDialogSingleton extends Stage {
 
             //String name = "";
             boolean done = false;
-            
 
             try {
                 done = false;
@@ -162,11 +162,10 @@ public class AppWelcomeDialogSingleton extends Stage {
 
                         done = true;
 
-                       
                         if (!(recentList.exists())) {
                             recentList.createNewFile();
                         }
-                        
+
                         Files.write(Paths.get("recentList.txt"), (name + "\n").getBytes(), StandardOpenOption.APPEND);
 
                     } else {
@@ -184,19 +183,70 @@ public class AppWelcomeDialogSingleton extends Stage {
             }
             AppWelcomeDialogSingleton.this.close();
         });
-        
 
         recentWorkList.getChildren().add(recentWorkLabel);
-        
-        
+
         ArrayList<String> maps = getRecentMaps(recentList);
-        
-        if(maps != null) {
-            for(String map: maps) {
-                Button button = new Button();
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+
+        Button button = null;
+        if (maps != null) {
+            for (String map : maps) {
+                button = new Button();
                 button.setText(map);
                 recentWorkList.getChildren().add(button);
+
+                ///Users/naimyoussiftraore/NetBeansProjects/METRO MAP MAKER/metroMapMaker/export/NAIM/NAIM Metro.json
+                File file = new File("/Users/naimyoussiftraore/NetBeansProjects/METRO MAP MAKER/metroMapMaker/export/" + map + "/" + map + " Metro.json");
+
+                button.setOnAction(e -> {
+
+                    try {
+                        // RESET THE WORKSPACE
+                        app.getWorkspaceComponent().resetWorkspace();
+
+                        // RESET THE DATA
+                        app.getDataComponent().resetData();
+                        
+                        if(file.exists()) {
+                            
+                            
+                        // LOAD THE FILE INTO THE DATA
+                        app.getFileComponent().loadData(app.getDataComponent(), file.getAbsolutePath());
+
+                        // NOW RELOAD THE WORKSPACE WITH THE RESET DATA
+                        app.getWorkspaceComponent().reloadWorkspace(app.getDataComponent());  //**********************
+
+                        // MAKE SURE THE WORKSPACE IS ACTIVATED
+                        app.getWorkspaceComponent().activateWorkspace(app.getGUI().getAppPane());
+                            
+                        }
+                        else{
+                            
+                             fileController.handleNewRequest();
+                        }
+
+                        
+                       name = map;
+
+//                        // AND MAKE SURE THE FILE BUTTONS ARE PROPERLY ENABLED
+//                        saved = true;
+//                        app.getGUI().updateToolbarControls(saved);
+                    } catch (Exception ex) {
+                        
+                       
+                        System.out.print("/Users/naimyoussiftraore/NetBeansProjects/METRO MAP MAKER/metroMapMaker/export/" + name + "/" + name + " Metro.json");
+                        AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+                        ex.printStackTrace();
+                        dialog.show(props.getProperty(LOAD_ERROR_TITLE), props.getProperty(LOAD_ERROR_MESSAGE));
+                    }
+
+                    AppWelcomeDialogSingleton.this.close();
+
+                });
+
             }
+
         }
 
         newWorkPane.setTop(bp1);
@@ -209,27 +259,27 @@ public class AppWelcomeDialogSingleton extends Stage {
         this.setScene(welcomeScene);
 
     }
-    
+
     public ArrayList<String> getRecentMaps(File list) {
-        
+
         ArrayList<String> maps = new ArrayList<String>();
-        
+
         try (Scanner in = new Scanner(list)) {
 
             while (in.hasNextLine()) {
 
-                maps.add(in.nextLine());   
+                maps.add(in.nextLine());
 
             }
-        }catch (FileNotFoundException ex) {
+        } catch (FileNotFoundException ex) {
             System.out.println("FILE NOT FOUND");
 
-        } 
+        }
 
         return maps;
-    
+
     }
-    
+
     public String getName() {
         return name;
     }

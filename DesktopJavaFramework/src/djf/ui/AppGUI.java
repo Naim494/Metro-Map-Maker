@@ -24,6 +24,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 //import jtps.jTPS;
 
 /**
@@ -64,6 +66,7 @@ public class AppGUI {
     protected Button newButton;
     protected Button loadButton;
     protected Button saveButton;
+    protected Button saveAsButton;
     protected Button exitButton;
     protected Button exportButton;
     
@@ -232,6 +235,7 @@ public class AppGUI {
         newButton = initChildButton(fileToolbar, NEW_ICON.toString(), NEW_TOOLTIP.toString(), false);
         loadButton = initChildButton(fileToolbar, LOAD_ICON.toString(), LOAD_TOOLTIP.toString(), false);
         saveButton = initChildButton(fileToolbar, SAVE_ICON.toString(), SAVE_TOOLTIP.toString(), true);
+        saveAsButton = initChildButton(fileToolbar, SAVE_AS_ICON.toString(), SAVE_TOOLTIP.toString(), false);
         exitButton = initChildButton(fileToolbar, EXIT_ICON.toString(), EXIT_TOOLTIP.toString(), false);
         exportButton = new Button();
         exportButton.setText("Export");
@@ -302,10 +306,25 @@ public class AppGUI {
         });
         loadButton.setOnAction(e -> {
             fileController.handleLoadRequest();
+            this.setNameOfMap(fileController.name);
 
         });
         saveButton.setOnAction(e -> {
-            fileController.handleSaveRequest();
+            try {
+                fileController.saveWork();
+            } catch (IOException ex) {
+                Logger.getLogger(AppGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        saveAsButton.setOnAction(e -> {
+            
+            try {
+                fileController.handleSaveAsRequest();
+            } catch (IOException ex) {
+                Logger.getLogger(AppGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
         });
         exitButton.setOnAction(e -> {
             fileController.handleExitRequest();

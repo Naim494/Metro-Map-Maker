@@ -25,20 +25,36 @@ public class DraggableLine extends Line implements Draggable {
     public Color color;
     ArrayList<DraggableStation> stations = new ArrayList<DraggableStation>();
     private DraggableLine extension = null;
-    boolean isExtension = false;
+    public boolean isExtension = false;
+    public String endStation = "";
+    public String startStation = "";
+    public String alias = "e";
+    public int extensionCounter = 0;
+    public String lastExtension = "";
     
-     public DraggableLine() {
-         
-     }
+    public DraggableLine() {
+        
+    }
 
-    public DraggableLine(DraggableStation s) {
+    public DraggableLine(DraggableStation s, String name) {
 
         setStrokeWidth(5.0);
         startXProperty().bind(label1.xProperty());
         startYProperty().bind(label1.yProperty());
         endXProperty().bind(s.centerXProperty());
         endYProperty().bind(s.centerYProperty());
+        this.endStation = s.getName();
+//        endXProperty().bind(s.label.xProperty());
+//        endYProperty().bind(s.label.yProperty());
         isExtension = true;
+        
+        this.alias = name + "_" + this.alias + String.valueOf(extensionCounter);
+        extensionCounter++;
+        
+        s.northLine = this.alias;
+        
+        label1.isLineLabel = true;
+        label1.isStartLabel = true;
     }
 
     public DraggableLine(String name, Color color) {
@@ -46,6 +62,10 @@ public class DraggableLine extends Line implements Draggable {
         this.name = name;
         this.label1.setText(name);
         this.label2.setText(name);
+        label1.isLineLabel = true;
+        label1.isStartLabel = true;
+        label2.isLineLabel = true;
+        
         this.color = color;
         setStroke(color);
         setFill(color);
@@ -60,7 +80,6 @@ public class DraggableLine extends Line implements Draggable {
 //        setStartY(10.0);
 //        setEndX(20.0);
 //        setEndY(50.0);
-
         startX = 0.0;
         startY = 0.0;
 
@@ -68,7 +87,10 @@ public class DraggableLine extends Line implements Draggable {
         startYProperty().bind(label1.yProperty());
         endXProperty().bind(label2.xProperty());
         endYProperty().bind(label2.yProperty());
-
+        
+        this.alias = name + "_" + this.alias + String.valueOf(extensionCounter);
+        
+        extensionCounter++;
 
     }
 
@@ -118,28 +140,30 @@ public class DraggableLine extends Line implements Draggable {
 
     @Override
     public double getX() {
-        return getLayoutX();
+        return getStartX();
     }
 
     @Override
     public double getY() {
-        return getLayoutX();
+        return getStartY();
     }
 
     @Override
     public double getWidth() {
-        return 0;
+        return getEndX();
     }
 
     @Override
     public double getHeight() {
-        return 0;
+        return getEndY();
     }
 
     @Override
     public void setLocationAndSize(double initX, double initY, double initWidth, double initHeight) {
         startXProperty().set(initX);
         startYProperty().set(initY);
+        endXProperty().set(initWidth);
+        endYProperty().set(initHeight);
         //widthProperty().set(initWidth);
         //heightProperty().set(initHeight);emplates.
     }
@@ -168,13 +192,21 @@ public class DraggableLine extends Line implements Draggable {
     public String getName() {
         return name;
     }
-    
-    public DraggableLine getExtension(){
+
+    public DraggableLine getExtension() {
         return extension;
-    
+
     }
 
-    public void setExtension(DraggableLine e){
+    public boolean isExtension() {
+        return isExtension;
+    }
+
+    public void setExtension(DraggableLine e) {
         this.extension = e;
+    }
+    
+    public String getAlias() {
+        return alias;
     }
 }

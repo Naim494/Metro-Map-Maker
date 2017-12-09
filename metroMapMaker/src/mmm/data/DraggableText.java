@@ -18,6 +18,10 @@ public class DraggableText extends Text implements Draggable {
     boolean isItalic;
     boolean isBold;
     
+    boolean isLineLabel;
+    boolean isStartLabel;
+    public boolean isStationLabel;
+    
     String name = "";
     
     public DraggableText() {
@@ -43,12 +47,28 @@ public class DraggableText extends Text implements Draggable {
         this.isBold =  isBold;
     }
     
+    public void setIsLineLabel(boolean b) {
+        this.isLineLabel =  b;
+    }
+    
+    public void setIsStartLabel(boolean b) {
+        this.isStartLabel =  b;
+    }
+    
     public boolean isItalic() {
         return isItalic;
     }
     
     public boolean isBold() {
         return isBold;
+    }
+    
+    public boolean isLineLabel() {
+        return isLineLabel;
+    }
+    
+    public boolean isStartLabel() {
+        return isStartLabel;
     }
 
     @Override

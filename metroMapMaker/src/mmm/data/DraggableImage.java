@@ -9,17 +9,17 @@ import java.io.File;
 import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+import static mmm.data.Draggable.IMAGE;
 
 /**
  *
  * @author naimyoussiftraore
  */
-public class DraggableImage extends Rectangle implements Draggable {
+public class DraggableImage extends DraggableRectangle {
 
     Image image;
     String imagePath;
     File imageFile;
-    String name = "";
 
     public DraggableImage() {
         
@@ -49,35 +49,5 @@ public class DraggableImage extends Rectangle implements Draggable {
     @Override
     public String getShapeType() {
 	return IMAGE;
-    }
-
-    @Override
-    public mmmState getStartingState() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void start(int x, int y) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void drag(int x, int y) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void size(int x, int y) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setLocationAndSize(double initX, double initY, double initWidth, double initHeight) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getName() {
-        return name;
     }
 }

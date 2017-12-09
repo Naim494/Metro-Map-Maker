@@ -46,6 +46,7 @@ public abstract class AppTemplate extends Application {
     public static AppAddLineDialogSingleton addLineDialog;
     public static AppAddStationDialogSingleton addStationDialog;
     public static AppRemoveNodeDialogSingleton removeItemDialog;
+    public static AppListStationsDialogSingleton listStationsDialog;
     public static AppWelcomeDialogSingleton welcomeDialog;
 
     // THIS METHOD MUST BE OVERRIDDEN WHERE THE CUSTOM BUILDER OBJECT
@@ -116,6 +117,9 @@ public abstract class AppTemplate extends Application {
         
         removeItemDialog = AppRemoveNodeDialogSingleton.getSingleton();
         removeItemDialog.init(primaryStage);
+        
+        listStationsDialog = AppListStationsDialogSingleton.getSingleton();
+        listStationsDialog.init(primaryStage);
         
         welcomeDialog = AppWelcomeDialogSingleton.getSingleton();
         welcomeDialog.init(primaryStage, this);

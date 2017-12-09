@@ -48,9 +48,13 @@ import mmm.data.DraggableStation;
 import mmm.data.DraggableText;
 import mmm.data.mmmData;
 import mmm.transactions.AddImageTransaction;
+import mmm.transactions.AddLineTransaction;
+import mmm.transactions.AddStationTransaction;
 import mmm.transactions.AddTextTransaction;
 import mmm.transactions.BoldTextTransaction;
 import mmm.transactions.ChangeBackgroundColorTransaction;
+import mmm.transactions.ChangeLineThicknessTransaction;
+import mmm.transactions.ChangeTextColorTransaction;
 import mmm.transactions.ItalicizeTextTransaction;
 import mmm.transactions.RemoveSelectedShapeTransaction;
 import mmm.transactions.SelectFontFamilyTransaction;
@@ -122,17 +126,24 @@ public class MapEditController {
             String name = app.addLineDialog.getName();
             Color color = app.addLineDialog.getColor();
 
-            DraggableLine line = new DraggableLine(name, color);
-            mmmWorkspace workspace = (mmmWorkspace) app.getWorkspaceComponent();
-            Pane canvas = workspace.getCanvas();
+            AddLineTransaction transaction = new AddLineTransaction(app, name, color);
+            mmmWorkspace.jTPS.addTransaction(transaction);
+            app.getGUI().getUndoButton().setDisable(false);
 
-            workspace.lines.put(name, line);
-            canvas.getChildren().add(line);
-            canvas.getChildren().add(line.label1);
-            canvas.getChildren().add(line.label2);
-
+//            DraggableLine line = new DraggableLine(name, color);
+//            mmmWorkspace workspace = (mmmWorkspace) app.getWorkspaceComponent();
+//            mmmData data = (mmmData) app.getDataComponent();
+//            Pane canvas = workspace.getCanvas();
+//
+//            workspace.lines.put(name, line);
+//            data.lines.put(name, line);
+//            canvas.getChildren().add(line);
+//            canvas.getChildren().add(line.label1);
+//            canvas.getChildren().add(line.label2);
             //Toolbar controls need to be updated
         }
+        
+        app.addLineDialog.isCancelled = false;
 
     }
 
@@ -147,7 +158,11 @@ public class MapEditController {
 
             if (selectedShape != null && draggableShape.getShapeType().equals(Draggable.LINE)) {
                 shapes.remove(selectedShape);
+                
                 DraggableLine line = (DraggableLine) selectedShape;
+                shapes.remove(line.label1);
+                shapes.remove(line.label2);
+
                 workspace.lines.remove(line.getName());
                 //selectedShape = null;
 
@@ -159,6 +174,23 @@ public class MapEditController {
 
     }
 
+    /**
+     * This method processes a user request to select the outline thickness for
+     * shape drawing.
+     */
+    public void processSelectLineThickness() {
+        /**
+         * golWorkspace workspace = (golWorkspace) app.getWorkspaceComponent();
+         * int outlineThickness = (int)
+         * workspace.getOutlineThicknessSlider().getValue();
+         * dataManager.setCurrentOutlineThickness(outlineThickness);
+         * app.getGUI().updateToolbarControls(false);*
+         */
+        ChangeLineThicknessTransaction transaction = new ChangeLineThicknessTransaction(app);
+        mmmWorkspace.jTPS.addTransaction(transaction);
+        app.getGUI().getUndoButton().setDisable(false);
+    }
+
     public void processMoveLineEnd() {
 
     }
@@ -166,10 +198,19 @@ public class MapEditController {
     public void processAddStationToLine(DraggableLine line) {
 
         line.getStations().add((DraggableStation) dataManager.getSelectedShape());
-        
-        
-        
-        
+
+    }
+
+    public void processListAllStations(DraggableLine line) {
+
+        String list = "";
+
+        for (DraggableStation s : line.getStations()) {
+
+            list += s.getName() + "\n";
+        }
+
+        app.listStationsDialog.show("All Stations on This Line:", list);
 
     }
 
@@ -184,14 +225,20 @@ public class MapEditController {
 
             String name = app.addStationDialog.getName();
 
-            DraggableStation station = new DraggableStation(name);
-            mmmWorkspace workspace = (mmmWorkspace) app.getWorkspaceComponent();
-            Pane canvas = workspace.getCanvas();
+            AddStationTransaction transaction = new AddStationTransaction(app, name);
+            mmmWorkspace.jTPS.addTransaction(transaction);
+            app.getGUI().getUndoButton().setDisable(false);
 
-            canvas.getChildren().add(station);
-
+//            DraggableStation station = new DraggableStation(name);
+//            mmmWorkspace workspace = (mmmWorkspace) app.getWorkspaceComponent();
+//            Pane canvas = workspace.getCanvas();
+//
+//            canvas.getChildren().add(station);
+            //canvas.getChildren().add(station.label);
             //Toolbar controls need to be updated
         }
+        app.addStationDialog.isCancelled = false;
+        
     }
 
     public void processRemoveStation() {
@@ -206,6 +253,8 @@ public class MapEditController {
 
             if (selectedShape != null && draggableShape.getShapeType().equals(Draggable.STATION)) {
                 shapes.remove(selectedShape);
+                DraggableStation s = (DraggableStation) selectedShape;
+                shapes.remove(s.label);
                 //selectedShape = null;
 
                 //workspace.reloadWorkspace(dataManager);
@@ -338,11 +387,10 @@ public class MapEditController {
             }
 
         }
-        
-        
+
         JsonArray linesArray = arrayBuilder1.build();
-        
-          JsonArrayBuilder arrayBuilder2 = Json.createArrayBuilder();
+
+        JsonArrayBuilder arrayBuilder2 = Json.createArrayBuilder();
         //ObservableList<Node> shapes = dataManager.getShapes();
         for (Node node : shapes) {
 
@@ -435,8 +483,7 @@ public class MapEditController {
             }
 
         }
-        
-        
+
         JsonArray stationsArray = arrayBuilder2.build();
 
         // THEN PUT IT ALL TOGETHER IN A JsonObject
@@ -446,11 +493,6 @@ public class MapEditController {
                 .add(JSON_LINES, linesArray)
                 .add(JSON_STATIONS, stationsArray)
                 .build();
-        
-        
-        
-        
-        
 
         // AND NOW OUTPUT IT TO A JSON FILE WITH PRETTY PRINTING
         Map<String, Object> properties = new HashMap<>(1);
@@ -462,11 +504,11 @@ public class MapEditController {
         jsonWriter.close();
 
         // INIT THE WRITER
-        OutputStream os = new FileOutputStream("export/" + mapName + "/" + mapName + " Metro.json");
+        OutputStream os = new FileOutputStream("export/" + dataManager.getMapName() + "/" + dataManager.getMapName() + "_" +" Metro.json");
         JsonWriter jsonFileWriter = Json.createWriter(os);
         jsonFileWriter.writeObject(dataManagerJSO);
         String prettyPrinted = sw.toString();
-        PrintWriter pw = new PrintWriter("export/" + mapName + "/" + mapName + " Metro.json");
+        PrintWriter pw = new PrintWriter("export/" + dataManager.getMapName() + "/" + dataManager.getMapName() + "_" + " Metro.json");
         pw.write(prettyPrinted);
         pw.close();
     }
@@ -479,7 +521,7 @@ public class MapEditController {
                 .add(JSON_ALPHA, color.getOpacity()).build();
         return colorJson;
     }
-    
+
     /**
      * This method handles a user request to remove the selected shape.
      */
@@ -490,21 +532,32 @@ public class MapEditController {
         app.getGUI().getUndoButton().setDisable(false);
 
     }
-    
+
     /**
      * This method processes a user request to select the background color.
      */
     public void processSelectBackgroundColor(Pane canvas, Color color, mmmData data) {
-        
+
         ChangeBackgroundColorTransaction transaction = new ChangeBackgroundColorTransaction(canvas, color, data);
         mmmWorkspace.jTPS.addTransaction(transaction);
         app.getGUI().getUndoButton().setDisable(false);
 
-       
     }
     
+    public void processSelectTextColor(DraggableText text, Color color, mmmData data) {
+
+        ChangeTextColorTransaction transaction = new ChangeTextColorTransaction(text, color, data);
+        mmmWorkspace.jTPS.addTransaction(transaction);
+        app.getGUI().getUndoButton().setDisable(false);
+
+    }
+    
+    
+    
+    
+
     public void processAddNewImage() {
-      
+
         image = new ImageView();
 
         FileChooser fileChooser = new FileChooser();
@@ -522,7 +575,7 @@ public class MapEditController {
         }
 
     }
-    
+
     public void processAddText() {
 
         app.textInputDialog.showAndWait();
@@ -533,10 +586,8 @@ public class MapEditController {
         mmmWorkspace.jTPS.addTransaction(transaction);
         app.getGUI().getUndoButton().setDisable(false);
 
-        
     }
-    
-    
+
     public void processChangeFontFamily(String font) {
         SelectFontFamilyTransaction transaction = new SelectFontFamilyTransaction(font, app);
         mmmWorkspace.jTPS.addTransaction(transaction);
@@ -550,9 +601,9 @@ public class MapEditController {
         app.getGUI().getUndoButton().setDisable(false);
 
     }
-    
-     public void processBoldText() {
-     
+
+    public void processBoldText() {
+
         BoldTextTransaction transaction = new BoldTextTransaction(app);
         mmmWorkspace.jTPS.addTransaction(transaction);
         app.getGUI().getUndoButton().setDisable(false);
@@ -560,13 +611,13 @@ public class MapEditController {
     }
 
     public void processItalicizeText() {
-       
+
         ItalicizeTextTransaction transaction = new ItalicizeTextTransaction(app);
         mmmWorkspace.jTPS.addTransaction(transaction);
         app.getGUI().getUndoButton().setDisable(false);
 
     }
-    
+
     public static boolean isText(Shape shape) {
         try {
             DraggableText draggableText = (DraggableText) shape;

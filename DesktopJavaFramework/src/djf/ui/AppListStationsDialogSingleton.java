@@ -5,6 +5,7 @@
  */
 package djf.ui;
 
+import java.util.ArrayList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -31,7 +32,6 @@ public class AppListStationsDialogSingleton extends Stage {
     Scene messageScene;
     Label messageLabel;
     Button closeButton;
-    String selection;
     
     // CONSTANT CHOICES
 
@@ -76,14 +76,14 @@ public class AppListStationsDialogSingleton extends Stage {
         closeButton = new Button(CLOSE);
 	
 	// MAKE THE EVENT HANDLER FOR THESE BUTTONS
-        EventHandler<ActionEvent> yesNoCancelHandler = (ActionEvent ae) -> {
-            Button sourceButton = (Button)ae.getSource();
-            AppListStationsDialogSingleton.this.selection = sourceButton.getText();
-            AppListStationsDialogSingleton.this.hide();
+        EventHandler<ActionEvent> closeHandler = (ActionEvent ae) -> {
+            
+            
+            AppListStationsDialogSingleton.this.close();
         };
         
 	// AND THEN REGISTER THEM TO RESPOND TO INTERACTIONS
-        closeButton.setOnAction(yesNoCancelHandler);
+        closeButton.setOnAction(closeHandler);
       
 
         // NOW ORGANIZE OUR BUTTONS
@@ -106,16 +106,7 @@ public class AppListStationsDialogSingleton extends Stage {
         this.setScene(messageScene);
     }
 
-    /**
-     * Accessor method for getting the selection the user made.
-     * 
-     * @return Either YES, NO, or CANCEL, depending on which
-     * button the user selected when this dialog was presented.
-     */
-    public String getSelection() {
-        return selection;
-    }
- 
+    
     /**
      * This method loads a custom message into the label
      * then pops open the dialog.

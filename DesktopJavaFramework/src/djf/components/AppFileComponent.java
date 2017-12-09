@@ -17,6 +17,8 @@ public interface AppFileComponent {
      * write app data to a file in the necessary format.
      */
     public void saveData(AppDataComponent data, String filePath) throws IOException;
+    
+    public void saveData(AppDataComponent data) throws IOException;
 
     /**
      * This function must be overridden in the actual component and would

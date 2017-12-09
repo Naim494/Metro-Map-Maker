@@ -35,7 +35,7 @@ public class AppTextInputDialogSingleton extends Stage{
     Button done;
     Button cancel;
     String text = "";
-    Boolean isCancelled = false;
+    public Boolean isCancelled = false;
     
     public static final String DONE = "Done";
     public static final String CANCEL = "Cancel";

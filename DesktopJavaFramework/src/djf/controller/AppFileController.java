@@ -31,6 +31,7 @@ import djf.ui.AppTextInputDialogSingleton;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 
 /**
  * This class provides the event programmed responses for the file controls that
@@ -50,6 +51,8 @@ public class AppFileController {
 
     // THIS IS THE FILE FOR THE WORK CURRENTLY BEING WORKED ON
     File currentWorkFile;
+
+    public String name;
 
     /**
      * This constructor just keeps the app for later.
@@ -92,34 +95,12 @@ public class AppFileController {
         try {
             // WE MAY HAVE TO SAVE CURRENT WORK
             boolean continueToMakeNew = true;
+
             if (!saved) {
                 // THE USER CAN OPT OUT HERE WITH A CANCEL
                 continueToMakeNew = promptToSave();
             }
 
-//            boolean done = false;
-//
-//            textDialog.show("Name", "Enter a name for the map:");
-//            File file;
-//
-//            while (!(done) && !(textDialog.isCanceled())) {
-//
-//                name = textDialog.getText();
-//
-//                file = new File("export/"+ name +"/" + name);
-//
-//                if (!(file.exists())) {
-//                   
-//                    file.getParentFile().mkdir();
-//                    file.createNewFile();
-//
-//                    done = true;
-//
-//                } else {
-//                    textDialog.show("Name", "Name already in use, please enter a new name:");
-//
-//                }
-//            }
             // IF THE USER REALLY WANTS TO MAKE A NEW COURSE
             if (continueToMakeNew) {
                 // RESET THE WORKSPACE
@@ -145,7 +126,6 @@ public class AppFileController {
                 // TELL THE USER NEW WORK IS UNDERWAY
                 dialog.show(props.getProperty(NEW_COMPLETED_TITLE), props.getProperty(NEW_COMPLETED_MESSAGE));
 
-               
             }
         } catch (IOException ioe) {
             // SOMETHING WENT WRONG, PROVIDE FEEDBACK
@@ -173,12 +153,64 @@ public class AppFileController {
                 // GO AHEAD AND PROCEED LOADING A Course
                 promptToOpen();
             }
+
         } catch (IOException ioe) {
             // SOMETHING WENT WRONG
             AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
             PropertiesManager props = PropertiesManager.getPropertiesManager();
+            ioe.printStackTrace();
             dialog.show(props.getProperty(LOAD_ERROR_TITLE), props.getProperty(LOAD_ERROR_MESSAGE));
+
         }
+    }
+
+    public void handleSaveAsRequest() throws IOException {
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+        AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+        AppTextInputDialogSingleton textDialog = AppTextInputDialogSingleton.getSingleton();
+        textDialog.isCancelled = false;
+
+        //String name = "";
+        boolean done = false;
+        File recentList = new File("recentList.txt");
+
+        try {
+            done = false;
+
+            textDialog.show("Name", "Enter a name for the map:");
+            File file;
+
+            while (!(done) && !(textDialog.isCanceled())) {
+
+                name = textDialog.getText();
+
+                file = new File("export/" + name + "/" + name);
+
+                if (!(file.exists())) {
+
+                    file.getParentFile().mkdir();
+                    file.createNewFile();
+
+                    done = true;
+
+                    if (!(recentList.exists())) {
+                        recentList.createNewFile();
+                    }
+
+                    Files.write(Paths.get("recentList.txt"), (name + "\n").getBytes(), StandardOpenOption.APPEND);
+
+                } else {
+                    textDialog.show("Name", "Name already in use, please enter a new name:");
+
+                }
+            }
+        } catch (IOException ioe) {
+            // SOMETHING WENT WRONG, PROVIDE FEEDBACK
+            dialog.show(props.getProperty(NEW_ERROR_TITLE), props.getProperty(NEW_ERROR_MESSAGE));
+        }
+
+        app.getFileComponent().saveData(app.getDataComponent(), name);
+
     }
 
     /**
@@ -209,6 +241,9 @@ public class AppFileController {
                 if (selectedFile != null) {
                     saveWork(selectedFile);
                 }
+
+                // ADDED
+                currentWorkFile = selectedFile;
             }
         } catch (IOException ioe) {
             AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
@@ -233,6 +268,11 @@ public class AppFileController {
         // AND REFRESH THE GUI, WHICH WILL ENABLE AND DISABLE
         // THE APPROPRIATE CONTROLS
         app.getGUI().updateToolbarControls(saved);
+    }
+
+    public void saveWork() throws IOException {
+
+        app.getFileComponent().saveData(app.getDataComponent());
     }
 
     /**
@@ -348,21 +388,43 @@ public class AppFileController {
                 app.getDataComponent().resetData();
 
                 // LOAD THE FILE INTO THE DATA
-                app.getFileComponent().loadData(app.getDataComponent(), selectedFile.getAbsolutePath());
+                if (selectedFile.getPath().contains(".json")) {
+                    app.getFileComponent().loadData(app.getDataComponent(), selectedFile.getAbsolutePath());
 
-                // MAKE SURE THE WORKSPACE IS ACTIVATED
-                app.getWorkspaceComponent().activateWorkspace(app.getGUI().getAppPane());
+                    // MAKE SURE THE WORKSPACE IS ACTIVATED
+                    app.getWorkspaceComponent().activateWorkspace(app.getGUI().getAppPane());
 
-                // AND MAKE SURE THE FILE BUTTONS ARE PROPERLY ENABLED
-                saved = true;
-                app.getGUI().updateToolbarControls(saved);
+                    // AND MAKE SURE THE FILE BUTTONS ARE PROPERLY ENABLED
+                    saved = true;
+                    app.getGUI().updateToolbarControls(saved);
+                } else {
+                    handleNewRequest();
+                }
+
+                String[] text = null;
+
+                String s = selectedFile.getPath();
+                
+                if (selectedFile.getPath().contains("Users")) {
+                    name = s.replace("/Users/naimyoussiftraore/NetBeansProjects/METRO MAP MAKER/metroMapMaker/export/", "");
+                    text = name.split("\\/");
+                    name = text[0];
+                } else {
+                    text = selectedFile.getPath().split("/^(.*?) Metro/");
+                    name = text[0];
+                }
+
+                System.out.println();
+
+                System.out.println(name);
+
             } catch (Exception e) {
                 AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+                e.printStackTrace();
                 dialog.show(props.getProperty(LOAD_ERROR_TITLE), props.getProperty(LOAD_ERROR_MESSAGE));
             }
         }
     }
-    
 
     /**
      * This mutator method marks the file as not saved, which means that when
@@ -383,4 +445,10 @@ public class AppFileController {
     public boolean isSaved() {
         return saved;
     }
+
+    public File getCurrentWorkFile() {
+
+        return currentWorkFile;
+    }
+
 }

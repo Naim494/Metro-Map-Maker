@@ -38,7 +38,7 @@ public class AppAddStationDialogSingleton extends Stage{
     Button cancel;
     String name = "";
     
-    Boolean isCancelled = false;
+    public Boolean isCancelled = false;
     
     public static final String DONE = "Done";
     public static final String CANCEL = "Cancel";

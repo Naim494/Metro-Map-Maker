@@ -19,7 +19,13 @@ public class DraggableStation extends Ellipse implements Draggable {
     double startCenterX;
     double startCenterY;
     String name;
-    DraggableText label = new DraggableText();
+    public DraggableText label = new DraggableText();
+    private String lineOn = "";
+    public String northLine = "";
+    public String southLine = "";
+    public DoubleProperty xOffset = new SimpleDoubleProperty(15);
+    public DoubleProperty yOffset = new SimpleDoubleProperty(5);
+    
 
     public DraggableStation() {
 
@@ -40,7 +46,8 @@ public class DraggableStation extends Ellipse implements Draggable {
 
         label.setX(30.0);
         label.setY(80.0);
-
+        label.isStationLabel = true;
+        
         DoubleProperty xOffset = new SimpleDoubleProperty(15);
         DoubleProperty yOffset = new SimpleDoubleProperty(5);
 
@@ -128,8 +135,8 @@ public class DraggableStation extends Ellipse implements Draggable {
 
         DraggableStation clone = new DraggableStation(this.name);
 
-        clone.setCenterX(30.0);
-        clone.setCenterY(80.0);
+//        clone.setCenterX(30.0);
+//        clone.setCenterY(80.0);
         clone.setRadiusX(10.0);
         clone.setRadiusY(10.0);
         clone.setOpacity(1.0);
@@ -137,6 +144,15 @@ public class DraggableStation extends Ellipse implements Draggable {
         clone.setFill(Color.WHITE);
         clone.startCenterX = 30.0;
         clone.startCenterY = 80.0;
+        clone.label.setText(name);
+
+        DoubleProperty xOffset = new SimpleDoubleProperty(15);
+        DoubleProperty yOffset = new SimpleDoubleProperty(5);
+        
+        clone.centerXProperty().bind(clone.label.xProperty().subtract(xOffset));
+        clone.centerYProperty().bind(clone.label.yProperty().add(yOffset));
+        
+        clone.label.isStationLabel = true;
 
         return clone;
     }
@@ -164,19 +180,19 @@ public class DraggableStation extends Ellipse implements Draggable {
 
         } else if (corner == 1) {
 
-            xOffset = new SimpleDoubleProperty(65);
+            xOffset = new SimpleDoubleProperty(35);
             yOffset = new SimpleDoubleProperty(5);
 
-            this.centerXProperty().bind(label.xProperty().subtract(xOffset));
+            this.centerXProperty().bind(label.xProperty().add(xOffset));
             this.centerYProperty().bind(label.yProperty().add(yOffset));
 
         } else if (corner == 2) {
 
-            xOffset = new SimpleDoubleProperty(65);
+            xOffset = new SimpleDoubleProperty(35);
             yOffset = new SimpleDoubleProperty(20);
 
-            this.centerXProperty().bind(label.xProperty().subtract(xOffset));
-            this.centerYProperty().bind(label.yProperty().add(yOffset));
+            this.centerXProperty().bind(label.xProperty().add(xOffset));
+            this.centerYProperty().bind(label.yProperty().subtract(yOffset));
 
         } else if (corner == 3) {
 
@@ -184,10 +200,22 @@ public class DraggableStation extends Ellipse implements Draggable {
             yOffset = new SimpleDoubleProperty(20);
 
             this.centerXProperty().bind(label.xProperty().subtract(xOffset));
-            this.centerYProperty().bind(label.yProperty().add(yOffset));
+            this.centerYProperty().bind(label.yProperty().subtract(yOffset));
 
         }
 
+    }
+    
+    public void setLineOn(String name) {
+        this.lineOn = name;
+    }
+    
+    public String getLineOn() {
+        return lineOn;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
     }
 
 }

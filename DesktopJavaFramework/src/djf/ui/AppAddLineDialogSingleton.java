@@ -37,7 +37,7 @@ public class AppAddLineDialogSingleton extends Stage{
     Button cancel;
     String name = "";
     Color color = null;
-    Boolean isCancelled = false;
+    public Boolean isCancelled = false;
     
     public static final String DONE = "Done";
     public static final String CANCEL = "Cancel";
