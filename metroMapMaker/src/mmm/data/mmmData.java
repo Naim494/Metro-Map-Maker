@@ -14,8 +14,13 @@ import javafx.scene.Node;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Effect;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -48,6 +53,8 @@ public class mmmData implements AppDataComponent {
 
     // THE BACKGROUND COLOR
     Color backgroundColor;
+    
+    Image backgroundImage;
 
     // AND NOW THE EDITING DATA
     // THIS IS THE SHAPE CURRENTLY BEING SIZED BUT NOT YET ADDED
@@ -134,6 +141,15 @@ public class mmmData implements AppDataComponent {
         mmmWorkspace workspace = (mmmWorkspace) app.getWorkspaceComponent();
         Pane canvas = workspace.getCanvas();
         BackgroundFill fill = new BackgroundFill(backgroundColor, null, null);
+        Background background = new Background(fill);
+        canvas.setBackground(background);
+    }
+    
+    public void setBackgroundImage(Image image) {
+         backgroundImage = image;
+        mmmWorkspace workspace = (mmmWorkspace) app.getWorkspaceComponent();
+        Pane canvas = workspace.getCanvas();
+        BackgroundImage fill = new BackgroundImage(backgroundImage,  BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,  BackgroundPosition.CENTER,  BackgroundSize.DEFAULT);
         Background background = new Background(fill);
         canvas.setBackground(background);
     }

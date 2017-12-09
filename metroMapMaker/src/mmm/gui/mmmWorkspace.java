@@ -512,6 +512,11 @@ public class mmmWorkspace extends AppWorkspaceComponent {
             mmmData dataManager = (mmmData) app.getDataComponent();
             dataManager.selectTopShape(selectLineName.getValue());
         });
+        
+        backGroundImage.setOnAction(e -> {
+            
+               //
+        });
 
         removeStationFromLineButton.setOnAction(e -> {
              line = null;

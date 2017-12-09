@@ -190,6 +190,8 @@ public class MapEditController {
         mmmWorkspace.jTPS.addTransaction(transaction);
         app.getGUI().getUndoButton().setDisable(false);
     }
+    
+    
 
     public void processMoveLineEnd() {
 
@@ -217,6 +219,8 @@ public class MapEditController {
     public void processRemoveStationFromLine() {
 
     }
+        
+        
 
     public void processAddNewStation() {
         app.addStationDialog.showAndWait();
@@ -544,11 +548,33 @@ public class MapEditController {
 
     }
     
+    public void processSelectBackgroundImage(Pane canvas, mmmData data) {
+        
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Image File");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"));
+        File selectedFile = fileChooser.showOpenDialog(app.getGUI().getWindow());
+        
+        if (selectedFile != null) {
+            String imagePath = selectedFile.toURI().toString();
+
+            AddImageTransaction transaction = new AddImageTransaction(app, imagePath, selectedFile);
+            mmmWorkspace.jTPS.addTransaction(transaction);
+            app.getGUI().getUndoButton().setDisable(false);
+
+        }
+        
+        
+        
+    }
+    
     public void processSelectTextColor(DraggableText text, Color color, mmmData data) {
 
         ChangeTextColorTransaction transaction = new ChangeTextColorTransaction(text, color, data);
         mmmWorkspace.jTPS.addTransaction(transaction);
         app.getGUI().getUndoButton().setDisable(false);
+        
+        
 
     }
     
